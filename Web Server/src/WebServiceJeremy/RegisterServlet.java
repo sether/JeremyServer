@@ -1,4 +1,4 @@
-/** File:    RegisterServlet.java
+/**File:    RegisterServlet.java
  * Purpose: Register user details; set cookies and session data
  * Listing: 24.NNN
  */
@@ -7,12 +7,14 @@ package WebServiceJeremy;
 import java.io.*;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 
 //Login, Register, Password API
 //Review googles API
+
 public class RegisterServlet extends HttpServlet {
    private String firstName;
    private String lastName;

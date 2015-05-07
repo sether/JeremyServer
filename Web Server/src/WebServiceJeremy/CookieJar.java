@@ -1,14 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package WebServiceJeremy;
 import javax.servlet.http.*;
 
 /** Methods for handling cookies
- * 
- * @author gsparke
  */
 public class CookieJar {
 
