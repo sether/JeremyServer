@@ -25,6 +25,7 @@ public class RegisterServlet extends HttpServlet {
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+    	
         boolean incomplete = false;
         boolean register = false;
         boolean noCookiesSet = false;       // Flag to indicate presence of cookies
@@ -93,7 +94,7 @@ public class RegisterServlet extends HttpServlet {
        
     private void registerForm(PrintWriter out) {
         out.println("<h2>New Member Registration</h2>");
-        out.println("<form action=registerServlet>" +
+        out.println("<form action=register>" +
                 "First Name: <input type=text name=firstName></br>" +
                 "Last Name: <input type=text name=lastName></br>" +
                 "Email: <input type=text name=email></br>" +
@@ -105,7 +106,7 @@ public class RegisterServlet extends HttpServlet {
     
     private void incompleteForm(PrintWriter out) {
         out.println("<h2>New Member Registration (please fill all fields)</h2>");
-        out.println("<form action=registerServlet>" +
+        out.println("<form action=register>" +
                 "First Name: <input type=text name=firstName value=" + firstName + "></br>" +
                 "Last Name: <input type=text name=lastName value=" + lastName + "></br>" +
                 "Email: <input type=text name=email value=" + email + "></br>" +
