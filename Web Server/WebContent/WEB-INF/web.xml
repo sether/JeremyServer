@@ -13,6 +13,15 @@
 		<servlet-name>RegisterServlet</servlet-name>
 		<url-pattern>/register</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ConverterServlet</servlet-name>
+		<servlet-class>WebServiceJeremy.ConverterServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ConverterServlet</servlet-name>
+		<url-pattern>/converter</url-pattern>
+	</servlet-mapping>
   
  	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
