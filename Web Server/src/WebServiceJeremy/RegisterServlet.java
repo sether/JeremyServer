@@ -120,7 +120,7 @@ public class RegisterServlet extends HttpServlet {
         out.println("<h2>Welcome Back to MyStore</h2>" +
                 "First Name: " + firstName + "</br>" +
                 "Last login: " + lastLoginDate + "</br></br>" +
-                "<a href=membersPageServlet>Members Page</a>");
+                "<a href=converter>Converter Page</a>");
     }
     
     private void welcomeForm(PrintWriter out) {
@@ -128,7 +128,7 @@ public class RegisterServlet extends HttpServlet {
                 "First Name: " + firstName + "</br>" +
                 "Last Login: " + lastName + "</br>" +
                 "Email: " + email + "</br></br>" +
-                "<a href=membersPageServlet>Members Page</a>");
+                "<a href=converter>Converter Page</a>");
     }
 
 
