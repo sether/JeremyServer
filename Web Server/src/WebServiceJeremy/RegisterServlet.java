@@ -21,6 +21,7 @@ public class RegisterServlet extends HttpServlet {
    private String email;
    private String creditCard;
    private String lastLoginDate;
+   public String content;
    
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -31,7 +32,7 @@ public class RegisterServlet extends HttpServlet {
         boolean noCookiesSet = false;       // Flag to indicate presence of cookies
         Cookie firstCookie = null;          // First name cookie
         Cookie lastLoginCookie = null;      // Last login cookie  
-        
+        content = "";
         firstCookie = CookieJar.getCookie(request, "firstName");
                 
         if (firstCookie == null) {  // Assume new member 
@@ -49,9 +50,9 @@ public class RegisterServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            out.println("<html><head>");
-            out.println("<title>Register User (RegisterServlet)</title>");  
-            out.println("</head><body><font face=sans-serif>");
+            content += "<html><head>" +
+            "<title>Register User (RegisterServlet)</title>" +
+            "</head><body><font face=sans-serif>";
             if (register) {
                 registerForm(out);         
             }
@@ -86,50 +87,53 @@ public class RegisterServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("status", "Registered");
             }
-            out.println("</body></html>");
-        } finally { 
-            out.close();
+            content += "</body></html>";
+        }finally{
+        	RequestDispatcher view = request.getRequestDispatcher("template.jsp"); // use this view
+        	request.setAttribute("content", content); //set this value - the page will display the value in the content section
+        	view.forward(request, response);
+
         }
     }
        
     private void registerForm(PrintWriter out) {
-        out.println("<h2>New Member Registration</h2>");
-        out.println("<form action=register>" +
-                "First Name: <input type=text name=firstName></br>" +
-                "Last Name: <input type=text name=lastName></br>" +
-                "Email: <input type=text name=email></br>" +
-                "Credit Card: <input type=text name=creditCard value=" + creditCard + "></br>" +
-                "<input type=submit>" +
-                "</form></br>" +
-                "<a href=index.jsp>Home</a>");
-    }
+        content += "<h2>New Member Registration</h2>" +
+        "<form action=register>" +
+        "First Name: <input type=text name=firstName></br>" +
+        "Last Name: <input type=text name=lastName></br>" +
+        "Email: <input type=text name=email></br>" +
+        "Credit Card: <input type=text name=creditCard value=" + creditCard + "></br>" +
+        "<input type=submit>" +
+        "</form></br>" +
+        "<a href=index.jsp>Home</a>";
+    }	
     
     private void incompleteForm(PrintWriter out) {
-        out.println("<h2>New Member Registration (please fill all fields)</h2>");
-        out.println("<form action=register>" +
-                "First Name: <input type=text name=firstName value=" + firstName + "></br>" +
-                "Last Name: <input type=text name=lastName value=" + lastName + "></br>" +
-                "Email: <input type=text name=email value=" + email + "></br>" +
-                "Credit Card: <input type=text name=creditCard value=" + creditCard + "></br>" +
-                "<input type=submit>" +
-                "</form></br>" +
-                "<a href=index.jsp>Home</a>");
-    }
-    
+    	content += "<h2>New Member Registration (please fill all fields)</h2>" +
+        "<form action=register>" +
+        "First Name: <input type=text name=firstName value=" + firstName + "></br>" +
+        "Last Name: <input type=text name=lastName value=" + lastName + "></br>" +
+        "Email: <input type=text name=email value=" + email + "></br>" +
+        "Credit Card: <input type=text name=creditCard value=" + creditCard + "></br>" +
+        "<input type=submit>" +
+        "</form></br>" +
+        "<a href=index.jsp>Home</a>";
+    }	
+    	
     private void welcomeBackForm(PrintWriter out) {
-        out.println("<h2>Welcome Back to MyStore</h2>" +
-                "First Name: " + firstName + "</br>" +
-                "Last login: " + lastLoginDate + "</br></br>" +
-                "<a href=converter>Converter Page</a>");
-    }
+        content += "<h2>Welcome Back to MyStore</h2>" +
+        "First Name: " + firstName + "</br>" +
+        "Last login: " + lastLoginDate + "</br></br>" +
+        "<a href=converter>Converter Page</a>";
+    }	
     
     private void welcomeForm(PrintWriter out) {
-        out.println("<h2>Welcome to MyStore - Your Details:</h2>" +
-                "First Name: " + firstName + "</br>" +
-                "Last Login: " + lastName + "</br>" +
-                "Email: " + email + "</br></br>" +
-                "<a href=converter>Converter Page</a>");
-    }
+        content += "<h2>Welcome to MyStore - Your Details:</h2>" +
+        "First Name: " + firstName + "</br>" +
+        "Last Login: " + lastName + "</br>" +
+        "Email: " + email + "</br></br>" +
+        "<a href=converter>Converter Page</a>";
+    }	
 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
