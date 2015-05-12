@@ -38,7 +38,7 @@
 					<a href="#" id="logo">Solarize</a>
 				</h1>
 
-				<%@ include file="nav.html" %>
+				<%@ include file="nav.jsp" %>
 
 			</div>
 		</div>

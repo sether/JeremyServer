@@ -55,6 +55,7 @@ public class ConverterServlet extends HttpServlet {
         
         RequestDispatcher view = request.getRequestDispatcher("template.jsp"); // use this view
         request.setAttribute("content", content); //set this value - the page will display the value in the content section
+        request.setAttribute("loginLink", "test");
         view.forward(request, response);
     }
 
