@@ -1,0 +1,19 @@
+CREATE DATABASE UserDatabase;
+USE UserDatabase
+
+CREATE TABLE User(
+email VARCHAR(30), 
+firstName VARCHAR(20), 
+lastName VARCHAR(20), 
+password VARCHAR(20), 
+CreditCardNumber VARCHAR(20), 
+APIKey VARCHAR(20), 
+PRIMARY KEY (email));
+
+CREATE TABLE APIEvents(
+id INT NOT NULL AUTO_INCREMENT,
+APIKey VARCHAR(20),
+LogDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+Description VARCHAR(20),
+PRIMARY KEY (id));
+;
