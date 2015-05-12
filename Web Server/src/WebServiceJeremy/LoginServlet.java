@@ -44,16 +44,15 @@ public class LoginServlet extends HttpServlet {
         }
      
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         try {
             content += "<html><head>" +
             "<title>Login (LoginServlet)</title>" +
             "</head><body><font face=sans-serif>";
             if (login) {
-                loginForm(out);         
+                loginForm();         
             }
             else if (incomplete) {
-                incompleteForm(out);
+                incompleteForm();
             }
             else {
             	content += "Logged in";
@@ -80,7 +79,7 @@ public class LoginServlet extends HttpServlet {
 	    }
 	}
        
-    private void loginForm(PrintWriter out) {
+    private void loginForm() {
         content += "<h2>Login</h2>" +
         "<form action=login>" +
         "Email: <input type=text name=email></br>" +
@@ -90,7 +89,7 @@ public class LoginServlet extends HttpServlet {
         "<a href=register.jsp>Register</a>";
     }	
     
-    private void incompleteForm(PrintWriter out) {
+    private void incompleteForm() {
     	content += "<h2>Login (please fill all fields)</h2>" +
         "<form action=lgoin>" +
         "Email: <input type=text name=email value=" + email + "></br>" +
