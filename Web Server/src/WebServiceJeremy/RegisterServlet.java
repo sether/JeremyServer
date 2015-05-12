@@ -54,22 +54,22 @@ public class RegisterServlet extends HttpServlet {
             "<title>Register User (RegisterServlet)</title>" +
             "</head><body><font face=sans-serif>";
             if (register) {
-                registerForm(out);         
+                registerForm();         
             }
             else if (incomplete) {
-                incompleteForm(out);
+                incompleteForm();
             }
             else {                          // The form has been filled out correctly
                 if (noCookiesSet) {  
                     /* The new member has just filled out the form;
                        Cookie not yet set - now we will create them */
                      firstCookie = new Cookie("firstName", firstName);
-                     welcomeForm(out);
+                     welcomeForm();
                 }
                 else { // Cookies have been set; visitor returning. Retrieve values from cookies
                     firstName = CookieJar.getCookieValue(request, "firstName");
                     lastLoginDate = CookieJar.getCookieValue(request, "lastLogin");      
-                    welcomeBackForm(out);
+                    welcomeBackForm();
                 }
                 
                 // Send or resend the cookie back to the browser:
@@ -96,7 +96,7 @@ public class RegisterServlet extends HttpServlet {
         }
     }
        
-    private void registerForm(PrintWriter out) {
+    private void registerForm() {
         content += "<h2>New Member Registration</h2>" +
         "<form action=register>" +
         "First Name: <input type=text name=firstName></br>" +
@@ -108,7 +108,7 @@ public class RegisterServlet extends HttpServlet {
         "<a href=index.jsp>Home</a>";
     }	
     
-    private void incompleteForm(PrintWriter out) {
+    private void incompleteForm() {
     	content += "<h2>New Member Registration (please fill all fields)</h2>" +
         "<form action=register>" +
         "First Name: <input type=text name=firstName value=" + firstName + "></br>" +
@@ -120,14 +120,14 @@ public class RegisterServlet extends HttpServlet {
         "<a href=index.jsp>Home</a>";
     }	
     	
-    private void welcomeBackForm(PrintWriter out) {
+    private void welcomeBackForm() {
         content += "<h2>Welcome Back to MyStore</h2>" +
         "First Name: " + firstName + "</br>" +
         "Last login: " + lastLoginDate + "</br></br>" +
         "<a href=converter>Converter Page</a>";
     }	
     
-    private void welcomeForm(PrintWriter out) {
+    private void welcomeForm() {
         content += "<h2>Welcome to MyStore - Your Details:</h2>" +
         "First Name: " + firstName + "</br>" +
         "Last Login: " + lastName + "</br>" +
