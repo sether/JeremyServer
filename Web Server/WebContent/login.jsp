@@ -42,16 +42,12 @@
 						</header>
 						<form>
 						<p>
-						Name:<br>
-						<input type="text" name="name">
-						</p>
-						<p>
 						Email<br>
 						<input type="text" name="email">
 						</p>
 						<p>
-						Message<br>
-						<textarea name="message" rows="6" cols="30"></textarea>
+						Password:<br>
+						<input type="text" name="password">
 						</p>
 						<p>
 						<input type="submit" value="Submit">
