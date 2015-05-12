@@ -22,7 +22,6 @@ public class IndexServlet extends HttpServlet {
         
         RequestDispatcher view = request.getRequestDispatcher("template.jsp"); // use this view
         request.setAttribute("content", content); //set this value - the page will display the value in the content section
-        request.setAttribute("loginLink", LoginStatusTemp.displayLoginWidget(session));
         view.forward(request, response);
     }
 

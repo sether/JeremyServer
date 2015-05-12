@@ -4,6 +4,14 @@
 		<li><a href="converter">Converter</a>
 		<li><a href="contactUs.html">Contact Us</a>
 		<li><a href="documentation.html">Documentation</a>
-		${loginLink}
+		
+		<%
+		String status = (String) session.getAttribute("status");
+		if(status != null && status.equals("Registered")){
+			out.print("<li><a href='logout'>Logout</a>");
+		} else {
+			out.print("<li><a href='login'>Login</a>");
+		}
+		%>
 	</ul>
 </nav>
