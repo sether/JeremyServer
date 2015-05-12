@@ -36,7 +36,8 @@ public class LoginServlet extends HttpServlet {
         if (firstCookie == null) {  // Assume new login 
             noCookiesSet = true;
             // Retrieve field values from web form:
-            email = request.getParameter("email");      
+            email = request.getParameter("email");
+            password = request.getParameter("password");
             if (email == null)
                  login = true;
             else if (email.isEmpty() || password.isEmpty())
@@ -50,18 +51,28 @@ public class LoginServlet extends HttpServlet {
             "</head><body><font face=sans-serif>";
             if (login) {
                 loginForm();         
-            }
-            else if (incomplete) {
+            }else if (incomplete) {
                 incompleteForm();
-            }
-            else {
-            	content += "Logged in";
+            }else {
+            	 if (noCookiesSet) {  
+                     /* The new member has just filled out the form;
+                        Cookie not yet set - now we will create them */
+                      firstCookie = new Cookie("email", email);
+                 }
+                 else { // Cookies have been set; visitor returning. Retrieve values from cookies
+                     email = CookieJar.getCookieValue(request, "email");
+                     lastLoginDate = CookieJar.getCookieValue(request, "lastLogin");      
+                 }
+            	content += "<h2>Login</h2>" +
+            	        "<form action=login>" +
+            	        "Logged In" +
+            	        "</form></br>";
             	//Send or resend the cookie back to the browser:
 	            firstCookie.setMaxAge(3600);
 	            response.addCookie(firstCookie);
 	            
 	            // Set the last login date in a cookie; can't have '/' in a cookie
-	            SimpleDateFormat myDateFormat = new SimpleDateFormat("d-MMM-yyyy");
+	            SimpleDateFormat myDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 	            lastLoginDate = myDateFormat.format(new Date());
 	            lastLoginCookie = new Cookie("lastLogin", lastLoginDate);
 	            lastLoginCookie.setMaxAge(3600);
@@ -86,17 +97,17 @@ public class LoginServlet extends HttpServlet {
         "Password: <input type=text name=password value=" + "" + "></br>" +
         "<input type=submit>" +
         "</form></br>" +
-        "<a href=register.jsp>Register</a>";
+        "<a href=register>Register</a>";
     }	
     
     private void incompleteForm() {
     	content += "<h2>Login (please fill all fields)</h2>" +
-        "<form action=lgoin>" +
+        "<form action=login>" +
         "Email: <input type=text name=email value=" + email + "></br>" +
         "Password: <input type=text name=password value=" + "" + "></br>" +
         "<input type=submit>" +
         "</form></br>" +
-        "<a href=register.jsp>Register</a>";
+        "<a href=register>Register</a>";
     }	
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
