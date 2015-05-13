@@ -10,6 +10,7 @@ creditCardNumber VARCHAR(20),
 apiKey VARCHAR(256), 
 PRIMARY KEY (email));
 
+
 CREATE TABLE APIEvents(
 id INT NOT NULL AUTO_INCREMENT,
 email VARCHAR(30),
