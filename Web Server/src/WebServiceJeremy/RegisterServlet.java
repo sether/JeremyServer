@@ -6,10 +6,15 @@ package WebServiceJeremy;
 
 import java.io.*;
 import java.util.Date;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
+
+import java.sql.Connection;
+import java.sql.Statement;
 
 
 //Login, Register, Password API
@@ -23,63 +28,28 @@ public class RegisterServlet extends HttpServlet {
    private String lastLoginDate;
    public String content;
    
-   /**
-    * host = "localhost:3306/";
-    * "INSERT INTO " + tableName + "(" + tableFields + ") values (" + valuesMarker + ")"
-    * try {
-			//If no host has been declared default to local host
-			if (host.equalsIgnoreCase("")) {
-				host = getHost(sqlType);
-				if(sqlType == SQLType.SQLSERVER){
-					host += "databaseName=" + databaseName + ";";
-				}
-			}
-			connectionURL = getConnectionURL(sqlType, host, databaseName);
-			try{
-				connection = DriverManager.getConnection(connectionURL, userName, password);
-			}catch(SQLException se){
-				
-			}finally{
-				if(connection == null){
-					createDatabase(host, databaseName, sqlType, userName, password);
-				}	
-			}
-			connectionURL = getConnectionURL(sqlType, host, databaseName);
-			connection = DriverManager.getConnection(connectionURL, userName, password);
-			DatabaseMetaData metaData = connection.getMetaData();
-			ResultSet resultSet = metaData.getTables(null, null, tableName, null);
-			if(!resultSet.next()){
-				createTable(host, databaseName, sqlType, userName, password, identity, idColumn);
-				connection = DriverManager.getConnection(connectionURL, userName, password);
-			}
-			preparedStatement = connection.prepareStatement(sqlInsertStatement);
-			for (int i = line; i < rows; i++) {
-				for (int j = 0; j < cols; j++) {
-					preparedStatement.setString(j + 1, data[i][j].toString());
-				}
-				preparedStatement.addBatch();
-				if (count++ % batchSize == 0) {
-					preparedStatement.executeBatch();
-				}
-			}
-			preparedStatement.executeBatch();
-		} catch (SQLException se) {
-			throw(se);
-		} finally {
-			try {
-				if (preparedStatement != null)
-					preparedStatement.close();
-			} catch (SQLException se) {
-				throw(se);
-			}
-			try {
-				if (connection != null)
-					connection.close();
-			} catch (SQLException se) {
-				throw(se);
-			}
-		}	
-    * */
+   public void openConnection() throws SQLException{
+	   Connection connection = null;
+	   Statement statement = null;
+	   String valuesMarker = "";
+	   String createUser = "INSERT INTO User(email, firstname, lastname, password, creditCardNumber, apiKey) values (" + valuesMarker + ")";
+	   String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
+	   try {
+		   connection = DriverManager.getConnection(connectionURL, "root", "");
+		   statement = connection.createStatement();
+		   statement.executeUpdate(createUser);
+		   statement.close();
+	   } catch (SQLException se) {
+		   throw(se);
+	   } finally {
+		   try {
+			   if (connection != null)
+				   connection.close();
+		   } catch (SQLException se) {
+			   throw(se);
+		   }
+	   }	
+   }
    
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -122,6 +92,7 @@ public class RegisterServlet extends HttpServlet {
                        Cookie not yet set - now we will create them */
                      firstCookie = new Cookie("firstName", firstName);
                      welcomeForm();
+                     
                 }
                 else { // Cookies have been set; visitor returning. Retrieve values from cookies
                     firstName = CookieJar.getCookieValue(request, "firstName");
