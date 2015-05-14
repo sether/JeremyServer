@@ -23,7 +23,8 @@ public class LoginServlet extends HttpServlet {
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-    	boolean login = false, incomplete = false;
+    	boolean login = false;
+    	boolean incomplete = false;
         HttpSession session = request.getSession();
     	content = "";
     	String status = (String) session.getAttribute("status");

@@ -68,18 +68,15 @@ public class RegisterServlet extends HttpServlet {
     	
         boolean incomplete = false;
         boolean register = false;
-        boolean noCookiesSet = false;       // Flag to indicate presence of cookies
-        Cookie firstCookie = null;          // First name cookie
-        Cookie lastLoginCookie = null;      // Last login cookie  
-        content = "";
-        firstCookie = CookieJar.getCookie(request, "firstName");
-                
-        if (firstCookie == null) {  // Assume new member 
-            noCookiesSet = true;
+        HttpSession session = request.getSession();
+    	content = "";
+    	String status = (String) session.getAttribute("status");
+    	firstName = request.getParameter("firstName");
+    	lastName = request.getParameter("lastName");
+    	email = request.getParameter("email");      
+              
+    	  if (!"Registered".equals(status)) {  // Assume new member 
             // Retrieve field values from web form:
-            firstName = request.getParameter("firstName");
-            lastName = request.getParameter("lastName");
-            email = request.getParameter("email");      
             if (firstName == null && lastName == null && email == null)
                  register = true;
             else if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty())
@@ -98,47 +95,23 @@ public class RegisterServlet extends HttpServlet {
                 incompleteForm();
             }
             else {                          // The form has been filled out correctly
-                if (noCookiesSet) {  
-                    /* The new member has just filled out the form;
-                       Cookie not yet set - now we will create them */
-                     firstCookie = new Cookie("firstName", firstName);
-                     String password = "apples";
-                     String apiKey = "85";
-                     valuesMarker = "'" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"'";
-                     try {
-						openConnection();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-                     welcomeForm();
-                     
-                }
-                else { // Cookies have been set; visitor returning. Retrieve values from cookies
-                    firstName = CookieJar.getCookieValue(request, "firstName");
-                    lastLoginDate = CookieJar.getCookieValue(request, "lastLogin");      
-                }
-                
-                // Send or resend the cookie back to the browser:
-                firstCookie.setMaxAge(3600);
-                response.addCookie(firstCookie);
-                
-                // Set the last login date in a cookie; can't have '/' in a cookie
-                SimpleDateFormat myDateFormat = new SimpleDateFormat("d-MMM-yyyy");
-                lastLoginDate = myDateFormat.format(new Date());
-                lastLoginCookie = new Cookie("lastLogin", lastLoginDate);
-                lastLoginCookie.setMaxAge(3600);
-                response.addCookie(lastLoginCookie);
-                
-                // Set the session data
-                HttpSession session = request.getSession();
-                session.setAttribute("status", "Registered");
-            }
+            	String password = "apples";
+            	String apiKey = "85";
+            	valuesMarker = "'" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"'";
+            	try {
+            		openConnection();
+            	} catch (SQLException e) {
+            		e.printStackTrace();
+            	}
+            	welcomeForm();
+            }            
+            // Set the session data
+            session.setAttribute("status", "Registered");
             content += "</body></html>";
         }finally{
         	RequestDispatcher view = request.getRequestDispatcher("template.jsp"); // use this view
         	request.setAttribute("content", content); //set this value - the page will display the value in the content section
         	view.forward(request, response);
-
         }
     }
        
