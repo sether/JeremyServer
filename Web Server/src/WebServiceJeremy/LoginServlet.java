@@ -5,8 +5,6 @@
 package WebServiceJeremy;
 
 import java.io.*;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

@@ -14,6 +14,14 @@
 		<url-pattern>/register</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>MemberServlet</servlet-name>
+		<servlet-class>WebServiceJeremy.MemberServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MemberServlet</servlet-name>
+		<url-pattern>/member</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>LoginServlet</servlet-name>
 		<servlet-class>WebServiceJeremy.LoginServlet</servlet-class>
 	</servlet>

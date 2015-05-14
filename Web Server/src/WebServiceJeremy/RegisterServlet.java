@@ -5,7 +5,6 @@
 package WebServiceJeremy;
 
 import java.io.*;
-import java.sql.SQLException;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
