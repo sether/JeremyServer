@@ -79,8 +79,8 @@ public class RegisterServlet extends HttpServlet {
             else {
             	try {
 					keys = ApiHandler.generateClientKeys(email);
-				} catch (Exception e1) {
-					System.out.println("Keys not found ever.");
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
             	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + keys[0] + "', '" + keys[1] + "')";
             	try {
