@@ -26,25 +26,35 @@ public class MemberServlet extends HttpServlet {
 	private String publicApiKey;
 	private String privateApiKey;
 	public String content;
-   
+	
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+    	HttpSession session = request.getSession();
+    	String user = (String) session.getAttribute("user");
+    	System.out.println(user);
+    	content = "";
     	try{
+    		String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection connection = DriverManager.getConnection(connectionURL, "root", "");
 			Statement statement = connection.createStatement();
 			ResultSet rs = statement.executeQuery("SELECT * FROM User");
 			while (rs.next()){
 				String emailRS = rs.getString("email");
-				if(email.equalsIgnoreCase("")){
+				if(emailRS.equalsIgnoreCase(user)){
 					email = emailRS;
-					String password = rs.getString("password");				
+					password = rs.getString("password");	
+					firstName = rs.getString("firstName");
+					lastName = rs.getString("lastName");
+					creditCard = rs.getString("creditCard");
+					publicApiKey = rs.getString("publicApiKey");
+					privateApiKey = rs.getString("privateApiKey");
 				}
 			}
 			statement.close();
 	    }catch (Exception e){
-	    	throw(e);
+	    	e.printStackTrace();
 	    }
     	response.setContentType("text/html;charset=UTF-8");
         try {

@@ -59,6 +59,9 @@ public class LoginServlet extends HttpServlet {
             }else {
             	displayMember();
 	            session.setAttribute("status", "Registered");
+	            session.setAttribute("user", email);
+	            String s = (String)session.getAttribute("user");
+	            System.out.println(s);
 	            }
             content += "</body></html>";
         }finally{
