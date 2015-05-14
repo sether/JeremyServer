@@ -9,9 +9,6 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-//Login, Register, Password API
-//Review googles API
-
 public class RegisterServlet extends HttpServlet {
    private String firstName;
    private String lastName;
