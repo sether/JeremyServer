@@ -71,7 +71,7 @@ public class RegisterServlet extends HttpServlet {
             email = request.getParameter("email");      
             if (firstName == null && lastName == null && email == null)
                  register = true;
-            else if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || creditCard.isEmpty())
+            else if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty())
                 incomplete = true;
         }
      
