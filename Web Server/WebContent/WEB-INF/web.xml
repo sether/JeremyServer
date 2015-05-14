@@ -22,6 +22,14 @@
 		<url-pattern>/login</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>LogoutServlet</servlet-name>
+		<servlet-class>WebServiceJeremy.LogoutServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LogoutServlet</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>ConverterServlet</servlet-name>
 		<servlet-class>WebServiceJeremy.ConverterServlet</servlet-class>
 	</servlet>
