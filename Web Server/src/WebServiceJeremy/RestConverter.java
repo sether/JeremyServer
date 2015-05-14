@@ -47,6 +47,7 @@ public class RestConverter {
 			outputFile.delete();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return Response.status(200).entity("failed creation: " + e).build();
 		}
 		
 		return Response.status(201).entity(result).build();
