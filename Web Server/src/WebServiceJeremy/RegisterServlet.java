@@ -65,7 +65,6 @@ public class RegisterServlet extends HttpServlet {
             	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"')";
             	try {
             		SQLConnectionUpdate.openConnection(exeStatement);
-            		System.out.println("Hack it out");
             		welcomeForm();
                 	session.setAttribute("status", "Registered");
             	} catch (Exception e) {
