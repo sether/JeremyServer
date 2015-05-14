@@ -33,7 +33,7 @@ public class RegisterServlet extends HttpServlet {
 	   Connection connection = null;
 	   Statement statement = null;
 	   String createUser = "INSERT INTO User(email, firstname, lastname, password, creditCardNumber, apiKey) values (" + valuesMarker + ")";
-	   String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
+	   String connectionURL = "jdbc:mysql://localhost:3306//JeremyAPIDatabase";
 	   try {
 		   connection = DriverManager.getConnection(connectionURL, "root", "");
 		   statement = connection.createStatement();

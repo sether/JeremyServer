@@ -18,8 +18,11 @@ import com.jeremy.FileController.OutputType;
 @Path("/restconverter")
 public class RestConverter {
 	
-	//TODO: how to handle api settings such as use first line as heading
+	//TODO: how to handle API settings such as use first line as heading
 	//maybe just have multiple methods?
+	//headers
+	//TODO: What to log and how?
+	//To a database? To a file? prolly database.
 	
 	@POST
 	@Path("/ConvertTOXML")
@@ -74,10 +77,7 @@ public class RestConverter {
 			e.printStackTrace();
 		}
 		
-		return result; //Response.status(201).entity(result).build();
+		return result;
 	}
-	
-	
-	
 	
 }
