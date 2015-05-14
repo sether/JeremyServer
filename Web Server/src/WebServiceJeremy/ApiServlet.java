@@ -32,6 +32,7 @@ public class ApiServlet extends HttpServlet {
     throws ServletException, IOException, GeneralSecurityException {
     	HttpSession session = request.getSession();
     	String content = "";
+    	String user = (String) session.getAttribute("user");
     	String status = (String) session.getAttribute("status");
     	
     	//determine what stage of conversion client is in
@@ -51,9 +52,14 @@ public class ApiServlet extends HttpServlet {
             	content = apiRequest();
             } else if(stage.equals("generated")){ //uploaded file stage
             	ApiHandler theApi = new ApiHandler();
-            	theApi.generateServerKeys();
+            	//theApi.generateServerKeys();
 				//content = "<h1>" + ApiHandler.generateDevKeys() + "</h1>";
-				//content = "<h2>" + ApiHandler.generate("randomstring", "1a2b", "aaaa1111" ) + "</h2>";
+            	try {
+					ApiHandler.generateClientKeys(user);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				content = "<h2> Hello</h2>";
             }
         }
         

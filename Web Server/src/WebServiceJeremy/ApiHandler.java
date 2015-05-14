@@ -27,8 +27,11 @@ import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
+
+import com.mysql.jdbc.interceptors.SessionAssociationInterceptor;
 
 
 
@@ -39,19 +42,20 @@ import org.apache.commons.codec.binary.Base64;
 */
 
 /** Jeremy Dev/User API Setup
- * Grab the username/email of the person
- * check if they have a public api key in the db
+ * Grab the email of the person in the database
+ * check if they have an api key in the db
  * if they don't, make a pub/pri pair for them and add the public key to the db
+ * otherwise just use it.
  * @throws NoSuchAlgorithmException 
  * 
  */
 public class ApiHandler {
 	static byte[] jeremyPublic;
-	KeyPairGenerator keyGen = null;
+	
 	String test = "test";
 	byte[] privateKeyDev = null;
 	byte[] publicKeyDev = null;
-	KeyPair key = null;
+	
 
 	public ApiHandler() {
 
@@ -60,15 +64,17 @@ public class ApiHandler {
 	/**
 	 * Takes unique data as a String (the full rest url call is good enough), hashes it with the private key the user has received.
 	 * 
-	 * @param fullUrlString - The full REST URL Call
-	 * @param privateKey - The private key value
-	 * @param publicKey - The public key, for user identification
+	 * theString - For our purposes we are using the users email as the unique string of data
+	 * privateKey - The private key value
+	 * publicKey - The public key, for user identification
 	 * @return
 	 * @throws GeneralSecurityException
 	 * @throws UnsupportedEncodingException
 	 */
-	public static String generate(String fullUrlString, String privateKey, String publicKey ) throws GeneralSecurityException, UnsupportedEncodingException {
-
+	/**
+	public static String calculate() throws GeneralSecurityException, UnsupportedEncodingException {
+		//String theString = databaseGetUsersEmail();
+		//String privateKey = databaseGetUsersPrivateKey();
 	    SecretKey secretKey = null;
 
 	    byte[] keyBytes = privateKey.getBytes();
@@ -78,28 +84,59 @@ public class ApiHandler {
 
 	    mac.init(secretKey);
 
-	    byte[] text = fullUrlString.getBytes();
+	    byte[] text = theString.getBytes();
 
 	    return new String(Base64.encodeBase64(mac.doFinal(text))).trim();
 	}
+	 * @throws Exception 
+	*/
 	
 	// Generating the Keys
-	public void generateServerKeys() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-		if (keyGen == null) {
+	public static String[] generateClientKeys(String user) throws Exception {		
+		String privateKey = null;
+		String publicKey = null;
+		KeyPairGenerator keyGen = null;
+		KeyPair key = null;
+		String theKeys[] = new String[2];
+		
+		privateKey = SQLConnectionUpdate.openConnectionGetPrivateKey(user);
+		publicKey = SQLConnectionUpdate.openConnectionGetPublicKey(user);
+		
+		if (publicKey == null && privateKey == null) {
 			keyGen = KeyPairGenerator.getInstance("RSA");
-			keyGen.initialize(1024);
+			keyGen.initialize(512);
 			key = keyGen.generateKeyPair();
-			privateKeyDev = key.getPrivate().getEncoded();
-			publicKeyDev = key.getPublic().getEncoded(); // Store this
 			
-			KeyFactory fact = KeyFactory.getInstance("RSA");
-			RSAPublicKeySpec pub = fact.getKeySpec(key.getPublic(), RSAPublicKeySpec.class);
-			RSAPrivateKeySpec priv = fact.getKeySpec(key.getPrivate(), RSAPrivateKeySpec.class);
-
-			saveToFile("public.key", pub.getModulus(), pub.getPublicExponent());
-			saveToFile("private.key", priv.getModulus(), priv.getPrivateExponent());
-			System.out.println("Generated Server Keys");
+			// Make the keys
+			privateKey = key.getPrivate().getEncoded().toString();
+			publicKey = key.getPublic().getEncoded().toString();
+			
+			theKeys[0] = privateKey;
+			theKeys[1] = publicKey;
+			
+			// Store the keys in the database
+			
+			
+			System.out.println("Newly Created pub/pri keys");
+			System.out.println("Private: " + privateKey + " Public: " + publicKey);
+			
+			return theKeys;
+		} else {
+			System.out.println("Grabbed keys from database.");
+			theKeys[0] = privateKey;
+			theKeys[1] = publicKey;
+			
+			return theKeys;
 		}
+
+			
+		//KeyFactory fact = KeyFactory.getInstance("RSA");
+		//RSAPublicKeySpec pub = fact.getKeySpec(key.getPublic(), RSAPublicKeySpec.class);
+		//RSAPrivateKeySpec priv = fact.getKeySpec(key.getPrivate(), RSAPrivateKeySpec.class);
+
+		//saveToFile("public.key", pub.getModulus(), pub.getPublicExponent());
+		//saveToFile("private.key", priv.getModulus(), priv.getPrivateExponent());
+		
 	}
 	
 	public void saveToFile(String fileName, BigInteger mod, BigInteger exp) throws IOException {
@@ -140,20 +177,6 @@ public class ApiHandler {
 		  byte[] cipherData = cipher.doFinal(data);
 		  return cipherData;
 		}
-	
-	// Generating the Keys
-	public String generateDevKeys() throws NoSuchAlgorithmException {
-		if (keyGen == null) {
-			keyGen = KeyPairGenerator.getInstance("RSA");
-			keyGen.initialize(1024);
-			key = keyGen.generateKeyPair();
-			privateKeyDev = key.getPrivate().getEncoded();
-			publicKeyDev = key.getPublic().getEncoded(); // Store this
-		}
-		
-		
-		return "Public Key: " + publicKeyDev.toString() + "\nSecret Key is: " + privateKeyDev.toString();
-	}
 	
 	public static String getJeremyPublicKey() {
 		return jeremyPublic.toString();

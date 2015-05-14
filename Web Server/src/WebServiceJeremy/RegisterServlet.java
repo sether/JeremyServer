@@ -20,8 +20,7 @@ public class RegisterServlet extends HttpServlet {
    private String password;
    private String reEnterPassword;
    public String content;
-   private String publicApiKey = "85";
-   private String privateApiKey = "85";
+   private String[] keys = new String[2];
    
    
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
@@ -39,6 +38,7 @@ public class RegisterServlet extends HttpServlet {
     	password = request.getParameter("password");
     	reEnterPassword = request.getParameter("reEnterPassword");
     	creditCard = request.getParameter("creditCard");
+    	
     	
     	if (!"Registered".equals(status)) {  // Assume new member 
             register = true;
@@ -77,7 +77,12 @@ public class RegisterServlet extends HttpServlet {
                 incompleteForm();
             }
             else {
-            	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + publicApiKey + "', '" + privateApiKey + "')";
+            	try {
+					keys = ApiHandler.generateClientKeys(email);
+				} catch (Exception e1) {
+					System.out.println("Keys not found ever.");
+				}
+            	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + keys[0] + "', '" + keys[1] + "')";
             	try {
             		SQLConnectionUpdate.openConnectionUpdate(exeStatement);
             		welcomeForm();
