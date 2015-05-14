@@ -6,6 +6,7 @@ package WebServiceJeremy;
 
 import java.io.*;
 import java.sql.SQLException;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -20,7 +21,8 @@ public class RegisterServlet extends HttpServlet {
    private String password;
    private String reEnterPassword;
    public String content;
-   private String apiKey = "85";
+   private String publicApiKey = "85";
+   private String privateApiKey = "85";
    
    
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
@@ -28,6 +30,7 @@ public class RegisterServlet extends HttpServlet {
     throws ServletException, IOException {
         boolean incomplete = false;
         boolean register = false;
+        boolean emailUsed = false;
         HttpSession session = request.getSession();
     	content = "";
     	String status = (String) session.getAttribute("status");
@@ -40,8 +43,16 @@ public class RegisterServlet extends HttpServlet {
     	
     	if (!"Registered".equals(status)) {  // Assume new member 
             register = true;
+            try {
+            	emailUsed = SQLConnectionUpdate.openConnectionValidationUser(email);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
     		if(password != null){
 	    		if(!password.equals(reEnterPassword)){
+	        		incomplete = true;
+	        		register = false;
+	        	}else if(emailUsed){
 	        		incomplete = true;
 	        		register = false;
 	        	}else{
@@ -59,12 +70,17 @@ public class RegisterServlet extends HttpServlet {
                 registerForm();         
             }
             else if (incomplete) {
+            	if(emailUsed){
+                	content += "<h1>Email is already registered</h1>";
+            	}else if(!password.equals(reEnterPassword)){
+            		content += "<h1>Make sure passwords match</h1>";
+            	}
                 incompleteForm();
             }
             else {
-            	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"')";
+            	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + publicApiKey + "', '" + privateApiKey + "')";
             	try {
-            		SQLConnectionUpdate.openConnection(exeStatement);
+            		SQLConnectionUpdate.openConnectionUpdate(exeStatement);
             		welcomeForm();
                 	session.setAttribute("status", "Registered");
             	} catch (Exception e) {
@@ -96,7 +112,7 @@ public class RegisterServlet extends HttpServlet {
     }	
     
     private void incompleteForm() {
-    	content += "<h2>New Member Registration (please fill all fields, make sure passwords match)</h2>" +
+    	content += "<h2>New Member Registration (please fill all fields)</h2>" +
         "<form action=register>" +
         "First Name: <input type=text name=firstName value=" + firstName + " required></br>" +
         "Last Name: <input type=text name=lastName value=" + lastName + " required></br>" +

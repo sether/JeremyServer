@@ -2,15 +2,36 @@ package WebServiceJeremy;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SQLConnectionUpdate {
-
-	public static void openConnection(String executeStatement) throws Exception{
-		   Connection connection = null;
-		   Statement statement = null;
-		   String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
+	   private static Connection connection = null;
+	   private static Statement statement = null;
+	   private static String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
+	
+	public static boolean openConnectionValidationUser(String emailTest) throws Exception{
+		boolean usedEmail = false;
+		try{
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(connectionURL, "root", "");
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT * FROM User");
+			while (rs.next()){
+				String email = rs.getString("email");
+				if(email.equalsIgnoreCase(emailTest)){
+					usedEmail = true;
+				}
+			}
+			statement.close();
+	    }catch (Exception e){
+	    	throw(e);
+	    }
+		return usedEmail;
+	}
+	
+	public static void openConnectionUpdate(String executeStatement) throws Exception{
 		   try {
 			   Class.forName("com.mysql.jdbc.Driver").newInstance();
 			   connection = DriverManager.getConnection(connectionURL, "root", "");
