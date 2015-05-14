@@ -32,16 +32,27 @@ public class RegisterServlet extends HttpServlet {
    public void openConnection() throws SQLException{
 	   Connection connection = null;
 	   Statement statement = null;
-	   String createUser = "INSERT INTO User(email, firstname, lastname, password, creditCardNumber, apiKey) values (" + valuesMarker + ")";
-	   String connectionURL = "jdbc:mysql://localhost:3306//JeremyAPIDatabase";
+	   String createUser = "INSERT INTO User VALUES (" + valuesMarker + ")";
+	   String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
 	   try {
+		   Class.forName("com.mysql.jdbc.Driver").newInstance();
 		   connection = DriverManager.getConnection(connectionURL, "root", "");
 		   statement = connection.createStatement();
+		   System.out.println(createUser);
 		   statement.executeUpdate(createUser);
 		   statement.close();
 	   } catch (SQLException se) {
 		   throw(se);
-	   } finally {
+	   } catch (InstantiationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IllegalAccessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} finally {
 		   try {
 			   if (connection != null)
 				   connection.close();
@@ -91,9 +102,9 @@ public class RegisterServlet extends HttpServlet {
                     /* The new member has just filled out the form;
                        Cookie not yet set - now we will create them */
                      firstCookie = new Cookie("firstName", firstName);
-                     String password = "";
-                     String apiKey = "";
-                     valuesMarker = email + ", " + firstName + ", " + lastName + ", " + password + ", " + creditCard + ", " + apiKey;
+                     String password = "apples";
+                     String apiKey = "85";
+                     valuesMarker = "'" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"'";
                      try {
 						openConnection();
 					} catch (SQLException e) {
