@@ -32,7 +32,6 @@ public class MemberServlet extends HttpServlet {
     throws ServletException, IOException {
     	HttpSession session = request.getSession();
     	String user = (String) session.getAttribute("user");
-    	System.out.println(user);
     	content = "";
     	try{
     		String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
@@ -47,7 +46,7 @@ public class MemberServlet extends HttpServlet {
 					password = rs.getString("password");	
 					firstName = rs.getString("firstName");
 					lastName = rs.getString("lastName");
-					creditCard = rs.getString("creditCard");
+					creditCard = rs.getString("creditCardNumber");
 					publicApiKey = rs.getString("publicApiKey");
 					privateApiKey = rs.getString("privateApiKey");
 				}
@@ -80,7 +79,7 @@ public class MemberServlet extends HttpServlet {
         "Credit Card: " + creditCard + "</br>" +
         "Public API Key: " + publicApiKey + "</br>" +
         "Private API Key: " + privateApiKey + "</br>" +
-        "<input type=submit values= generateAPIKey>" +
+        "<input type=button value= 'Generate API Key'>" +
         "</form></br>";
     }	
         

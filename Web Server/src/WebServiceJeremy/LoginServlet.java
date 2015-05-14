@@ -60,9 +60,7 @@ public class LoginServlet extends HttpServlet {
             	displayMember();
 	            session.setAttribute("status", "Registered");
 	            session.setAttribute("user", email);
-	            String s = (String)session.getAttribute("user");
-	            System.out.println(s);
-	            }
+	        }
             content += "</body></html>";
         }finally{
 	    	RequestDispatcher view = request.getRequestDispatcher("template.jsp"); // use this view
@@ -73,7 +71,7 @@ public class LoginServlet extends HttpServlet {
        
     private void loginForm() {
         content += "<h2>Login</h2>" +
-        "<form action=login>" +
+        "<form action=login method=POST>" +
         "Email: <input type='email' name=email required></br>" +
         "Password: <input type='password' name=password required></br>" +
         "<input type=submit>" +
@@ -84,7 +82,7 @@ public class LoginServlet extends HttpServlet {
     private void incompleteForm() {
     	content += "<h1>Invalid Login</h1>" +
     	"<h2>Login</h2>" +
-        "<form action=login>" +
+        "<form action=login method=POST>" +
         "Email: <input type='email' name=email value=" + email + " required></br>" +
         "Password: <input type='password' name=password required></br>" +
         "<input type=submit>" +
@@ -94,7 +92,7 @@ public class LoginServlet extends HttpServlet {
 
     private void displayMember() {
     	content += "<h2>Login</h2>" +
-    	        "<form action=login>" +
+    	        "<form action=login method=POST>" +
     	        "Logged In" +
     	        "</form></br>";
     }

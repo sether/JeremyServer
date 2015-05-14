@@ -98,7 +98,7 @@ public class RegisterServlet extends HttpServlet {
        
     private void registerForm() {
         content += "<h2>New Member Registration</h2>" +
-        "<form action=register>" +
+        "<form action=register method=POST>" +
         "First Name: <input type=text name=firstName required></br>" +
         "Last Name: <input type=text name=lastName required></br>" +
         "Email: <input type='email' name=email required></br>" +
@@ -112,7 +112,7 @@ public class RegisterServlet extends HttpServlet {
     
     private void incompleteForm() {
     	content += "<h2>New Member Registration (please fill all fields)</h2>" +
-        "<form action=register>" +
+        "<form action=register method=POST>" +
         "First Name: <input type=text name=firstName value=" + firstName + " required></br>" +
         "Last Name: <input type=text name=lastName value=" + lastName + " required></br>" +
         "Email: <input type='email' name=email value=" + email + " required></br>" +
