@@ -64,7 +64,7 @@ public class LoginServlet extends HttpServlet {
         content += "<h2>Login</h2>" +
         "<form action=login>" +
         "Email: <input type=text name=email></br>" +
-        "Password: <input type=text name=password value=" + "" + "></br>" +
+        "Password: <input type=password name=password value=" + "" + "></br>" +
         "<input type=submit>" +
         "</form></br>" +
         "<a href=register>Register</a>";
