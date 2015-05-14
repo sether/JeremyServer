@@ -27,11 +27,11 @@ public class RegisterServlet extends HttpServlet {
    private String creditCard;
    private String lastLoginDate;
    public String content;
+   private String valuesMarker = "";
    
    public void openConnection() throws SQLException{
 	   Connection connection = null;
 	   Statement statement = null;
-	   String valuesMarker = "";
 	   String createUser = "INSERT INTO User(email, firstname, lastname, password, creditCardNumber, apiKey) values (" + valuesMarker + ")";
 	   String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
 	   try {
@@ -91,6 +91,14 @@ public class RegisterServlet extends HttpServlet {
                     /* The new member has just filled out the form;
                        Cookie not yet set - now we will create them */
                      firstCookie = new Cookie("firstName", firstName);
+                     String password = "";
+                     String apiKey = "";
+                     valuesMarker = email + ", " + firstName + ", " + lastName + ", " + password + ", " + creditCard + ", " + apiKey;
+                     try {
+						openConnection();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
                      welcomeForm();
                      
                 }
