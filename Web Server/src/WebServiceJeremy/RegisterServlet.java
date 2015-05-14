@@ -5,17 +5,9 @@
 package WebServiceJeremy;
 
 import java.io.*;
-import java.util.Date;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-
 import javax.servlet.*;
 import javax.servlet.http.*;
-
-import java.sql.Connection;
-import java.sql.Statement;
-
 
 //Login, Register, Password API
 //Review googles API
@@ -28,45 +20,12 @@ public class RegisterServlet extends HttpServlet {
    private String password;
    private String reEnterPassword;
    public String content;
-   private String valuesMarker = "";
+   private String apiKey = "85";
    
-   public void openConnection() throws SQLException{
-	   Connection connection = null;
-	   Statement statement = null;
-	   String createUser = "INSERT INTO User VALUES (" + valuesMarker + ")";
-	   String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
-	   try {
-		   Class.forName("com.mysql.jdbc.Driver").newInstance();
-		   connection = DriverManager.getConnection(connectionURL, "root", "");
-		   statement = connection.createStatement();
-		   System.out.println(createUser);
-		   statement.executeUpdate(createUser);
-		   statement.close();
-	   } catch (SQLException se) {
-		   throw(se);
-	   } catch (InstantiationException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (IllegalAccessException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (ClassNotFoundException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} finally {
-		   try {
-			   if (connection != null)
-				   connection.close();
-		   } catch (SQLException se) {
-			   throw(se);
-		   }
-	   }	
-   }
    
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-    	
         boolean incomplete = false;
         boolean register = false;
         HttpSession session = request.getSession();
@@ -83,7 +42,6 @@ public class RegisterServlet extends HttpServlet {
             else if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty())
                 incomplete = true;
         }
-     
         response.setContentType("text/html;charset=UTF-8");
         try {
             content += "<html><head>" +
@@ -96,10 +54,9 @@ public class RegisterServlet extends HttpServlet {
                 incompleteForm();
             }
             else {                          // The form has been filled out correctly
-            	String apiKey = "85";
-            	valuesMarker = "'" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"'";
+            	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"')";
             	try {
-            		openConnection();
+            		SQLConnectionUpdate.openConnection(exeStatement);
             	} catch (SQLException e) {
             		e.printStackTrace();
             	}
@@ -173,7 +130,7 @@ public class RegisterServlet extends HttpServlet {
     }
 
     /** 
-    * Returns a short description of the servlet.
+    * Returns a short description of the servlet
     */
     public String getServletInfo() {
         return "Short description";
