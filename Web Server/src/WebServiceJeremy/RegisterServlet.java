@@ -33,15 +33,23 @@ public class RegisterServlet extends HttpServlet {
     	String status = (String) session.getAttribute("status");
     	firstName = request.getParameter("firstName");
     	lastName = request.getParameter("lastName");
-    	email = request.getParameter("email");      
-              
+    	email = request.getParameter("email");
+    	password = request.getParameter("password");
+    	reEnterPassword = request.getParameter("reEnterPassword");
+    	creditCard = request.getParameter("creditCard");
+    	
     	if (!"Registered".equals(status)) {  // Assume new member 
-            // Retrieve field values from web form:
-            if (firstName == null && lastName == null && email == null)
-            	register = true;
-            else if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty())
-                incomplete = true;
+            register = true;
+    		if(password != null){
+	    		if(!password.equals(reEnterPassword)){
+	        		incomplete = true;
+	        		register = false;
+	        	}else{
+	        		register = false;
+	        	}
+            }
         }
+    	
         response.setContentType("text/html;charset=UTF-8");
         try {
             content += "<html><head>" +
@@ -53,15 +61,18 @@ public class RegisterServlet extends HttpServlet {
             else if (incomplete) {
                 incompleteForm();
             }
-            else {                          // The form has been filled out correctly
+            else {
             	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"')";
             	try {
             		SQLConnectionUpdate.openConnection(exeStatement);
-            	} catch (SQLException e) {
+            		System.out.println("Hack it out");
+            		welcomeForm();
+                	session.setAttribute("status", "Registered");
+            	} catch (Exception e) {
             		e.printStackTrace();
+            		connectionError();
             	}
-            	welcomeForm();
-            	session.setAttribute("status", "Registered");
+            	
             }            
             content += "</body></html>";
         }finally{
@@ -74,26 +85,26 @@ public class RegisterServlet extends HttpServlet {
     private void registerForm() {
         content += "<h2>New Member Registration</h2>" +
         "<form action=register>" +
-        "First Name: <input type=text name=firstName></br>" +
-        "Last Name: <input type=text name=lastName></br>" +
-        "Email: <input type=text name=email></br>" +
-        "Password: <input type=text name=password value=" + password + "></br>" +
-        "Re-Enter Password: <input type=text name=password value=" + reEnterPassword + "></br>" +
-        "Credit Card: <input type=text name=creditCard value=" + creditCard + "></br>" +
+        "First Name: <input type=text name=firstName required></br>" +
+        "Last Name: <input type=text name=lastName required></br>" +
+        "Email: <input type='email' name=email required></br>" +
+        "Password: <input type='password' name=password required></br>" +
+        "Re-Enter Password: <input type='password' name=reEnterPassword required></br>" +
+        "Credit Card: <input type=text name=creditCard required></br>" +
         "<input type=submit>" +
         "</form></br>" +
         "<a href=login>Login Page</a>";
     }	
     
     private void incompleteForm() {
-    	content += "<h2>New Member Registration (please fill all fields)</h2>" +
+    	content += "<h2>New Member Registration (please fill all fields, make sure passwords match)</h2>" +
         "<form action=register>" +
-        "First Name: <input type=text name=firstName value=" + firstName + "></br>" +
-        "Last Name: <input type=text name=lastName value=" + lastName + "></br>" +
-        "Email: <input type=text name=email value=" + email + "></br>" +
-        "Password: <input type=text name=password value=" + password + "></br>" +
-        "Re-Enter Password: <input type=text name=password value=" + reEnterPassword + "></br>" +
-        "Credit Card: <input type=text name=creditCard value=" + creditCard + "></br>" +
+        "First Name: <input type=text name=firstName value=" + firstName + " required></br>" +
+        "Last Name: <input type=text name=lastName value=" + lastName + " required></br>" +
+        "Email: <input type='email' name=email value=" + email + " required></br>" +
+        "Password: <input type='password' name=password value=" + password + " required></br>" +
+        "Re-Enter Password: <input type='password' name=reEnterPassword value=" + reEnterPassword + " required></br>" +
+        "Credit Card: <input type=text name=creditCard value=" + creditCard + " required></br>" +
         "<input type=submit>" +
         "</form></br>" +
         "<a href=login>Login Page</a>";
@@ -107,6 +118,10 @@ public class RegisterServlet extends HttpServlet {
         "<a href=converter>Converter Page</a>";
     }	
 
+    private void connectionError() {
+        content += "<h2>Error connecting to the MySQL Database, please try again when your database is operational</h2>" +
+        "<a href=index.jsp>Home Page</a>";
+    }	
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 

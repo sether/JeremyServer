@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class SQLConnectionUpdate {
 
-	public static void openConnection(String executeStatement) throws SQLException{
+	public static void openConnection(String executeStatement) throws Exception{
 		   Connection connection = null;
 		   Statement statement = null;
 		   String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
@@ -18,13 +18,13 @@ public class SQLConnectionUpdate {
 			   statement.executeUpdate(executeStatement);
 			   statement.close();
 		   } catch (SQLException e) {
-			   e.printStackTrace();
+			   throw(e);
 		   } catch (InstantiationException e) {
-			e.printStackTrace();
+			   throw(e);
 		   } catch (IllegalAccessException e) {
-			   e.printStackTrace();
+			   throw(e);
 		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
+			   throw(e);
 		   } finally {
 			   try {
 				   if (connection != null)
