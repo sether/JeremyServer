@@ -25,7 +25,8 @@ public class RegisterServlet extends HttpServlet {
    private String lastName;
    private String email;
    private String creditCard;
-   private String lastLoginDate;
+   private String password;
+   private String reEnterPassword;
    public String content;
    private String valuesMarker = "";
    
@@ -75,10 +76,10 @@ public class RegisterServlet extends HttpServlet {
     	lastName = request.getParameter("lastName");
     	email = request.getParameter("email");      
               
-    	  if (!"Registered".equals(status)) {  // Assume new member 
+    	if (!"Registered".equals(status)) {  // Assume new member 
             // Retrieve field values from web form:
             if (firstName == null && lastName == null && email == null)
-                 register = true;
+            	register = true;
             else if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty())
                 incomplete = true;
         }
@@ -95,7 +96,6 @@ public class RegisterServlet extends HttpServlet {
                 incompleteForm();
             }
             else {                          // The form has been filled out correctly
-            	String password = "apples";
             	String apiKey = "85";
             	valuesMarker = "'" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + apiKey +"'";
             	try {
@@ -104,9 +104,8 @@ public class RegisterServlet extends HttpServlet {
             		e.printStackTrace();
             	}
             	welcomeForm();
+            	session.setAttribute("status", "Registered");
             }            
-            // Set the session data
-            session.setAttribute("status", "Registered");
             content += "</body></html>";
         }finally{
         	RequestDispatcher view = request.getRequestDispatcher("template.jsp"); // use this view
@@ -121,10 +120,12 @@ public class RegisterServlet extends HttpServlet {
         "First Name: <input type=text name=firstName></br>" +
         "Last Name: <input type=text name=lastName></br>" +
         "Email: <input type=text name=email></br>" +
+        "Password: <input type=text name=password value=" + password + "></br>" +
+        "Re-Enter Password: <input type=text name=password value=" + reEnterPassword + "></br>" +
         "Credit Card: <input type=text name=creditCard value=" + creditCard + "></br>" +
         "<input type=submit>" +
         "</form></br>" +
-        "<a href=index.jsp>Home</a>";
+        "<a href=login>Login Page</a>";
     }	
     
     private void incompleteForm() {
@@ -133,14 +134,16 @@ public class RegisterServlet extends HttpServlet {
         "First Name: <input type=text name=firstName value=" + firstName + "></br>" +
         "Last Name: <input type=text name=lastName value=" + lastName + "></br>" +
         "Email: <input type=text name=email value=" + email + "></br>" +
+        "Password: <input type=text name=password value=" + password + "></br>" +
+        "Re-Enter Password: <input type=text name=password value=" + reEnterPassword + "></br>" +
         "Credit Card: <input type=text name=creditCard value=" + creditCard + "></br>" +
         "<input type=submit>" +
         "</form></br>" +
-        "<a href=index.jsp>Home</a>";
+        "<a href=login>Login Page</a>";
     }	
     
     private void welcomeForm() {
-        content += "<h2>Welcome to MyStore - Your Details:</h2>" +
+        content += "<h2>Welcome to JeremyAPI Web Service - Your Details:</h2>" +
         "First Name: " + firstName + "</br>" +
         "Last Login: " + lastName + "</br>" +
         "Email: " + email + "</br></br>" +
