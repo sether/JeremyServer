@@ -82,6 +82,7 @@ public class RegisterServlet extends HttpServlet {
             		SQLConnectionUpdate.openConnectionUpdate(exeStatement);
             		welcomeForm();
                 	session.setAttribute("status", "Registered");
+                    session.setAttribute("user", email);
             	} catch (Exception e) {
             		e.printStackTrace();
             		connectionError();
