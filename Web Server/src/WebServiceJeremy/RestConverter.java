@@ -63,7 +63,7 @@ public class RestConverter {
 		//check if user is valid and Authorize them
 		if (publicAPIKey == null || publicAPIKey.equals("") || encodedEmail == null || encodedEmail.equals("") || !AuthorizeUser(encodedEmail, publicAPIKey)) {
 			//return not a user
-			return Response.status(401).entity("Not a valid API key").build();
+			return Response.status(403).entity("Not a valid API key").build();
 		}
 		
 		//make sure there is a table name
@@ -75,7 +75,7 @@ public class RestConverter {
 		//make sure the csv data is not empty or null
 		if (csvData == null || csvData.equals("")) {
 			//if it is, error
-			return Response.status(406).entity("Not a valid API key").build();
+			return Response.status(406).entity("Please supply csv data").build();
 		}
 		
 		FileController fc = new FileController();
@@ -98,30 +98,55 @@ public class RestConverter {
 		//set up results
 		String result = "";
 		try {
-			//create file
+			//create temporary file
 			File inputFile = File.createTempFile("csvInput-", ".tmp");
+			
+			//write csv data to file
 			FileUtility.writeFile(inputFile, csvData);
 			
+			//use the api to read in that file
 			fc.readFile(inputFile);
 			
-			if (tableName != null && !tableName.equals("")) {
-				fc.setTableName(tableName);
+			//already checked for null or empty. add the table name
+			fc.setTableName(tableName);
+
+			//set up file name depending on output type
+			String fileNamePrefix = "tempFile";
+			if (fileOutputType == OutputType.JSON) {
+				fileNamePrefix = "jsonOutput-";
+			} else if (fileOutputType == OutputType.XML) {
+				fileNamePrefix = "xmlOutput-";
 			}
 			
-			File outputFile = File.createTempFile("jsonOutput-", ".tmp");
+			//create a new temporary file
+			File outputFile = File.createTempFile(fileNamePrefix, ".tmp");
+			
+			//use the api to output the csv data to the type specified to the new file
 			fc.outputData(outputFile, fileOutputType);
 			
+			//read in the file data and make it the result
+			result = new Scanner(outputFile).useDelimiter("\\Z").next();
 			
-			result += new Scanner(outputFile).useDelimiter("\\Z").next();
+			//delete the temporary files so as to use less space
 			inputFile.delete();
 			outputFile.delete();
 		} catch (IOException e) {
-			//e.printStackTrace();
+			//return error if failed
 			return Response.status(500).entity("failed creation: IOError").build();
 		}
-		logToDataBase();
-	    return Response.status(201).entity(result).build();
 		
+		//log the usage to a database for a user
+		//TODO: get proper email
+		Response dataBaseResponse = logToDataBase("apples@newApple.com", publicAPIKey, fileOutputType, tableName, csvData.length());
+		
+		//if there is a response from that database
+		if (dataBaseResponse != null) {
+			//return errored response and do not continue
+			return dataBaseResponse;
+		}
+		
+		//return the created data with a successful creation code
+	    return Response.status(201).entity(result).build();
 	}
 	
 	private boolean AuthorizeUser(String encodedEmail, String publicAPIKey) {
@@ -129,12 +154,21 @@ public class RestConverter {
 		return true;
 	}
 	
-	private void logToDataBase() {
-		/*try {
-			SQLConnectionUpdate.openConnection("");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}*/
+	private Response logToDataBase(String email, String publicAPIKey, OutputType conversionType, String fileName, int fileCharacters) {
+		String statement = "";
+		String restEnum = "REST";
+		
+		String description = "The Jeremy API was used to convert a csv file to a " + conversionType + " file via the REST interface.";
+		
+		statement = "INSERT INTO APIEvents (email, publicApiKey, fileName, size, methodType, description) VALUES('" + email + "', '" + publicAPIKey + "', '" + fileName + ".csv', " + fileCharacters +", '"+ restEnum + "', '" + description + "');";
+		
+		try {
+			SQLConnectionUpdate.openConnectionUpdate(statement);
+		} catch (Exception e) {
+			System.out.println("Error with statement: " +  statement + "\nError: " + e);
+			return Response.status(500).entity("Could not link api key with account").build();
+		}
+		return null;
 	}
 	
 }

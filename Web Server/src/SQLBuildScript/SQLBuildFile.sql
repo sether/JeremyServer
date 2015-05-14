@@ -19,7 +19,7 @@ publicApiKey VARCHAR(256),
 logDate DATETIME DEFAULT CURRENT_TIMESTAMP,
 fileName VARCHAR(50),
 size VARCHAR(20),
-methodType ENUM ('html', 'rest'),
+methodType ENUM ('HTML', 'REST'),
 description VARCHAR(500),
 PRIMARY KEY (id),
 FOREIGN KEY (email) REFERENCES User(email));
