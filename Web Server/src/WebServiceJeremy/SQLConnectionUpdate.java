@@ -7,9 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SQLConnectionUpdate {
-	   private static Connection connection = null;
-	   private static Statement statement = null;
-	   private static String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
+	private static Connection connection = null;
+	private static Statement statement = null;
+	private static String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
 	
 	public static boolean openConnectionValidationUser(String emailTest) throws Exception{
 		boolean usedEmail = false;
@@ -29,6 +29,27 @@ public class SQLConnectionUpdate {
 	    	throw(e);
 	    }
 		return usedEmail;
+	}
+	
+	public static boolean openConnectionValidationLogin(String emailTest, String passwordTest) throws Exception{
+		boolean validUser = false;
+		try{
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(connectionURL, "root", "");
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT * FROM User");
+			while (rs.next()){
+				String email = rs.getString("email");
+				String password = rs.getString("password");
+				if(email.equalsIgnoreCase(emailTest) && password.equals(passwordTest)){
+					validUser = true;
+				}
+			}
+			statement.close();
+	    }catch (Exception e){
+	    	throw(e);
+	    }
+		return validUser;
 	}
 	
 	public static void openConnectionUpdate(String executeStatement) throws Exception{

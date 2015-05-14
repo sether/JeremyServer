@@ -117,8 +117,8 @@ public class RegisterServlet extends HttpServlet {
         "First Name: <input type=text name=firstName value=" + firstName + " required></br>" +
         "Last Name: <input type=text name=lastName value=" + lastName + " required></br>" +
         "Email: <input type='email' name=email value=" + email + " required></br>" +
-        "Password: <input type='password' name=password value=" + password + " required></br>" +
-        "Re-Enter Password: <input type='password' name=reEnterPassword value=" + reEnterPassword + " required></br>" +
+        "Password: <input type='password' name=password required></br>" +
+        "Re-Enter Password: <input type='password' name=reEnterPassword required></br>" +
         "Credit Card: <input type=text name=creditCard value=" + creditCard + " required></br>" +
         "<input type=submit>" +
         "</form></br>" +

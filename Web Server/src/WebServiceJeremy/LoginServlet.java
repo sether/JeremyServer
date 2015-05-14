@@ -25,19 +25,29 @@ public class LoginServlet extends HttpServlet {
     throws ServletException, IOException {
     	boolean login = false;
     	boolean incomplete = false;
+    	boolean validUser = false;
         HttpSession session = request.getSession();
     	content = "";
     	String status = (String) session.getAttribute("status");
-    	
-        if (!"Registered".equals(status)) {  // Assume new login 
-            // Retrieve field values from web form:
-            email = request.getParameter("email");
-            password = request.getParameter("password");
-            if (email == null)
-                 login = true;
-            else if (email.isEmpty() || password.isEmpty())
+
+        email = request.getParameter("email");
+        password = request.getParameter("password");
+    	if (!"Registered".equals(status)) {  // Assume new login 
+    		try {
+    			validUser = SQLConnectionUpdate.openConnectionValidationLogin(email, password);
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    		login = true;
+    		if(password != null){
                 incomplete = true;
-        }
+            	login = false;
+	        	if(validUser){
+	            	incomplete = false;
+	                login = false;
+	        	}
+	    	}
+   		}
      
         response.setContentType("text/html;charset=UTF-8");
         try {
@@ -63,18 +73,19 @@ public class LoginServlet extends HttpServlet {
     private void loginForm() {
         content += "<h2>Login</h2>" +
         "<form action=login>" +
-        "Email: <input type=text name=email></br>" +
-        "Password: <input type=password name=password value=" + "" + "></br>" +
+        "Email: <input type='email' name=email required></br>" +
+        "Password: <input type='password' name=password required></br>" +
         "<input type=submit>" +
         "</form></br>" +
         "<a href=register>Register</a>";
     }	
     
     private void incompleteForm() {
-    	content += "<h2>Login (please fill all fields)</h2>" +
+    	content += "<h1>Invalid Login</h1>" +
+    	"<h2>Login</h2>" +
         "<form action=login>" +
-        "Email: <input type=text name=email value=" + email + "></br>" +
-        "Password: <input type=text name=password value=" + "" + "></br>" +
+        "Email: <input type='email' name=email value=" + email + " required></br>" +
+        "Password: <input type='password' name=password required></br>" +
         "<input type=submit>" +
         "</form></br>" +
         "<a href=register>Register</a>";
