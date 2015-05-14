@@ -18,23 +18,17 @@ import javax.servlet.http.*;
 public class LoginServlet extends HttpServlet {
    private String email;
    private String password;
-   private String lastLoginDate;
    public String content;
    
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+    	boolean login = false, incomplete = false;
+        HttpSession session = request.getSession();
+    	content = "";
+    	String status = (String) session.getAttribute("status");
     	
-        boolean incomplete = false;
-        boolean login = false;
-        boolean noCookiesSet = false;       // Flag to indicate presence of cookies
-        Cookie firstCookie = null;          // First name cookie
-        Cookie lastLoginCookie = null;
-        content = "";
-        firstCookie = CookieJar.getCookie(request, "email");
-                
-        if (firstCookie == null) {  // Assume new login 
-            noCookiesSet = true;
+        if (!"Registered".equals(status)) {  // Assume new login 
             // Retrieve field values from web form:
             email = request.getParameter("email");
             password = request.getParameter("password");
@@ -54,32 +48,7 @@ public class LoginServlet extends HttpServlet {
             }else if (incomplete) {
                 incompleteForm();
             }else {
-            	 if (noCookiesSet) {  
-                     /* The new member has just filled out the form;
-                        Cookie not yet set - now we will create them */
-                      firstCookie = new Cookie("email", email);
-                 }
-                 else { // Cookies have been set; visitor returning. Retrieve values from cookies
-                     email = CookieJar.getCookieValue(request, "email");
-                     lastLoginDate = CookieJar.getCookieValue(request, "lastLogin");      
-                 }
-            	content += "<h2>Login</h2>" +
-            	        "<form action=login>" +
-            	        "Logged In" +
-            	        "</form></br>";
-            	//Send or resend the cookie back to the browser:
-	            firstCookie.setMaxAge(3600);
-	            response.addCookie(firstCookie);
-	            
-	            // Set the last login date in a cookie; can't have '/' in a cookie
-	            SimpleDateFormat myDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-	            lastLoginDate = myDateFormat.format(new Date());
-	            lastLoginCookie = new Cookie("lastLogin", lastLoginDate);
-	            lastLoginCookie.setMaxAge(3600);
-	            response.addCookie(lastLoginCookie);
-	                
-	            // Set the session data
-	            HttpSession session = request.getSession();
+            	displayMember();
 	            session.setAttribute("status", "Registered");
 	            }
             content += "</body></html>";
@@ -110,6 +79,13 @@ public class LoginServlet extends HttpServlet {
         "<a href=register>Register</a>";
     }	
 
+    private void displayMember() {
+    	content += "<h2>Login</h2>" +
+    	        "<form action=login>" +
+    	        "Logged In" +
+    	        "</form></br>";
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
     * Handles the HTTP <code>GET</code> method.
@@ -132,7 +108,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     /** 
-    * Returns a short description of the servlet.
+    * Returns a short description of the servlet
     */
     public String getServletInfo() {
         return "Short description";

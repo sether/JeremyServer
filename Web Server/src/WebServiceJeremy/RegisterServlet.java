@@ -116,7 +116,6 @@ public class RegisterServlet extends HttpServlet {
                 else { // Cookies have been set; visitor returning. Retrieve values from cookies
                     firstName = CookieJar.getCookieValue(request, "firstName");
                     lastLoginDate = CookieJar.getCookieValue(request, "lastLogin");      
-                    welcomeBackForm();
                 }
                 
                 // Send or resend the cookie back to the browser:
@@ -165,13 +164,6 @@ public class RegisterServlet extends HttpServlet {
         "<input type=submit>" +
         "</form></br>" +
         "<a href=index.jsp>Home</a>";
-    }	
-    	
-    private void welcomeBackForm() {
-        content += "<h2>Welcome Back to MyStore</h2>" +
-        "First Name: " + firstName + "</br>" +
-        "Last login: " + lastLoginDate + "</br></br>" +
-        "<a href=converter>Converter Page</a>";
     }	
     
     private void welcomeForm() {
