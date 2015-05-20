@@ -39,8 +39,6 @@
 
 			</div>
 		</div>
-
-	</div>
 		
 		<!-- Main -->
 			<div id="main" class="wrapper style4">
@@ -52,6 +50,6 @@
 					</section>
 				</div>
 			</div>
-<%@ include file="footer.html" %>
+			<%@ include file="footer.html" %>
 	</body>
 </html>

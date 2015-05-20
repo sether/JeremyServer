@@ -1,7 +1,12 @@
 <!DOCTYPE HTML>
+<!--
+	Solarize by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
 <html>
 	<head>
-		<title>Contact Us</title>
+		<title>Jeremy CSV Converter - Help</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
@@ -11,19 +16,29 @@
 		<script src="js/skel.min.js"></script>
 		<script src="js/skel-layers.min.js"></script>
 		<script src="js/init.js"></script>
-		</head>
-	<body>
-
+		<noscript>
+			<link rel="stylesheet" href="css/skel.css" />
+			<link rel="stylesheet" href="css/style.css" />
+		</noscript>
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+	</head>
+	<body class ="homepage">
 		<!-- Header Wrapper -->
-			<div class="wrapper style1">
-			
-			<!-- Header -->
-				<div id="header">
-					<div class="container">
-						<%@ include file="nav.jsp" %>
-					</div>
-				</div>
+	<div class="wrapper style1">
+
+		<!-- Header -->
+		<div id="header">
+			<div class="container">
+
+				<!-- Logo -->
+				<h1>
+					<a href="#" id="logo">Solarize</a>
+				</h1>
+
+				<%@ include file="nav.jsp" %>
+
 			</div>
+		</div>
 		
 		<!-- Main -->
 			<div id="main" class="wrapper style4">
@@ -55,6 +70,6 @@
 					</section>
 				</div>
 			</div>
-			<script src="/WebContent/footer.html"></script>
+			<%@ include file="footer.html" %>
 	</body>
 </html>
