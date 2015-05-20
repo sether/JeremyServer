@@ -1,8 +1,8 @@
 CREATE DATABASE JeremyAPIDatabase;
-USE JeremyAPIDatabase
+USE JeremyAPIDatabase;
 
 CREATE TABLE User(
-email VARCHAR(30), 
+email VARCHAR(50), 
 firstName VARCHAR(20), 
 lastName VARCHAR(20), 
 password VARCHAR(20), 
@@ -14,7 +14,7 @@ PRIMARY KEY (email));
 
 CREATE TABLE APIEvents(
 id INT NOT NULL AUTO_INCREMENT,
-email VARCHAR(30),
+email VARCHAR(50),
 publicApiKey VARCHAR(256),
 logDate DATETIME DEFAULT CURRENT_TIMESTAMP,
 fileName VARCHAR(50),
