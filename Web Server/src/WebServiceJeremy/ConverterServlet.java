@@ -1,7 +1,3 @@
-/**File:    RegisterServlet.java
- * Purpose: Register user details; set cookies and session data
- * Listing: 24.NNN
- */
 package WebServiceJeremy;
 
 import java.io.File;
@@ -9,35 +5,40 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import javax.servlet.*;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.*;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.jeremy.FileController;
+import com.jeremy.FileController.OutputType;
 import com.jeremy.FileUtility;
 import com.jeremy.SQLHandler.SQLType;
 
-
-//Login, Register, Password API
-//Review googles API
+//TODO requires validation. Trouble spots include restricted words for sql and the id column ranges and booleans
 
 public class ConverterServlet extends HttpServlet {
-    // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
+	private static final long serialVersionUID = 1L;
+	private HttpSession session;
+	
+    /***
+     * The main method of this class. It contains the logic that determines what should be displayed to the
+     * client.
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-    	HttpSession session = request.getSession();
+    	session = request.getSession();
     	String content = "";
     	String status = (String) session.getAttribute("status");
     	
@@ -63,8 +64,10 @@ public class ConverterServlet extends HttpServlet {
             		content = getUploadForm();
             	}
             } else if(stage.equals("upload")){ //uploaded file stage
+            	String fileName = (String) request.getAttribute("uploadedFileName");
+            	
             	//create temp file and write received string to it
-            	content = "<h1>Converted Files</h1>";
+            	content = "<h1>Converted Files: " + fileName + "</h1>";
             	content += "<p>Right click the links below and select \"Save As\"</p><br>";
             	File csvFile = File.createTempFile("csvFile", ".csv");
             	csvFile.deleteOnExit();
@@ -83,54 +86,40 @@ public class ConverterServlet extends HttpServlet {
             	//parse checkboxes
             	//xml
             	if(request.getAttribute("xmlCheck") != null){
-            		File xmlFile = File.createTempFile("xml_", ".xml");
-            		xmlFile.deleteOnExit();
-            		fc.csvToXML(csvFile, xmlFile);
-            		content += "<a href='converter?file=" + xmlFile.getName() + "'>XML File</a><br>";
+            		content += convertCSV(fc, OutputType.XML, fileName, csvString.length());
             	}
             	
             	//xsd
             	if(request.getAttribute("schemaCheck") != null){
-            		File xsdFile = File.createTempFile("xsd_", ".xsd");
-            		xsdFile.deleteOnExit();
-            		fc.csvToXMLSCHEMA(csvFile, xsdFile);
-            		content += "<a href='converter?file=" + xsdFile.getName() + "'>XSD File</a><br>";
+            		content += convertCSV(fc, OutputType.XML_SCHEMA, fileName, csvString.length());
             	}
             	
             	//json
             	if(request.getAttribute("jsonCheck") != null){
-            		File jsonFile = File.createTempFile("json_", ".json");
-            		jsonFile.deleteOnExit();
-            		fc.csvToJSON(csvFile, jsonFile);
-            		content += "<a href='converter?file=" + jsonFile.getName() + "'>JSON File</a><br>";
+            		content += convertCSV(fc, OutputType.JSON, fileName, csvString.length());
             	}
             	
-            	//mysql
-            	if(request.getAttribute("mySQL") != null){
-            		File mySQLFile = File.createTempFile("mysql_", ".sql");
-            		mySQLFile.deleteOnExit();
-            		fc.csvToSQLFile(csvFile, mySQLFile, (String) request.getAttribute("dbName"), SQLType.MYSQL, 
-            				(request.getAttribute("dbIdCol") == null), (Integer.valueOf((String) request.getAttribute("dbIdCol"))));
-            		content += "<a href='converter?file=" + mySQLFile.getName() + "'>MySQL File</a><br>";
+            	if(request.getAttribute("sqlCheck") != null){
+            		String dbName = (String) request.getAttribute("dbName");
+            		int idCol = (Integer.valueOf((String) request.getAttribute("dbIdCol")));
+            		boolean genIdCol = (request.getAttribute("dbIdCol") == null);
+            		
+            		//mysql
+                	if(request.getAttribute("mySQL") != null){
+                		content += convertCSVDB(fc, fileName, csvString.length(), SQLType.MYSQL, idCol, genIdCol, dbName);
+                	}
+                	
+                	//mssql
+                	if(request.getAttribute("msSQL") != null){
+                		content += convertCSVDB(fc, fileName, csvString.length(), SQLType.SQLSERVER, idCol, genIdCol, dbName);
+                	}
+                	
+                	//postgre
+                	if(request.getAttribute("postSQL") != null){
+                		content += convertCSVDB(fc, fileName, csvString.length(), SQLType.POSTGRESQL, idCol, genIdCol, dbName);
+                	}
             	}
             	
-            	//mssql
-            	if(request.getAttribute("msSQL") != null){
-            		File msSQLFile = File.createTempFile("mssql_", ".sql");
-            		msSQLFile.deleteOnExit();
-            		fc.csvToSQLFile(csvFile, msSQLFile, (String) request.getAttribute("dbName"), SQLType.SQLSERVER, 
-            				(request.getAttribute("dbIdCol") == null), (Integer.valueOf((String) request.getAttribute("dbIdCol"))));
-            		content += "<a href='converter?file=" + msSQLFile.getName() + "'>Microsoft SQL File</a><br>";
-            	}
-            	
-            	//postgre
-            	if(request.getAttribute("postSQL") != null){
-            		File pgSQLFile = File.createTempFile("postgre_", ".sql");
-            		pgSQLFile.deleteOnExit();
-            		fc.csvToSQLFile(csvFile, pgSQLFile, (String) request.getAttribute("dbName"), SQLType.POSTGRESQL, 
-            				(request.getAttribute("dbIdCol") == null), (Integer.valueOf((String) request.getAttribute("dbIdCol"))));
-            		content += "<a href='converter?file=" + pgSQLFile.getName() + "'>Postgre SQL File</a><br>";
-            	}
             }
         }
         
@@ -142,7 +131,6 @@ public class ConverterServlet extends HttpServlet {
     }
 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
     * Handles the HTTP <code>GET</code> method.
     * @param request servlet request
@@ -154,7 +142,7 @@ public class ConverterServlet extends HttpServlet {
     } 
 
     /** 
-    * Handles the HTTP <code>POST</code> method.
+    * Handles the HTTP <code>POST</code> method. Has a loop to extract files from requests.
     * @param request servlet request
     * @param response servlet response
     */
@@ -177,6 +165,11 @@ public class ConverterServlet extends HttpServlet {
         }
     }
     
+    /***
+     * A string constructing method to display the csv import form. This form uses a javascript file called
+     * jeremy.js. This file contains functions for showing and hiding divs in response to checkboxes.
+     * @return
+     */
     public String getUploadForm(){
     	return  "<script src='js/jeremy.js'></script>"
     			+ "<h2>CSV Import Options</h2>"
@@ -219,7 +212,14 @@ public class ConverterServlet extends HttpServlet {
     			+ "</form>";
     }
     
-    public void processFileRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{    	
+    /***
+     * A method to handle hyperlink requests for files.
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void processFileRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{    	
     	File file = new File(System.getProperty("java.io.tmpdir") + request.getParameter("file"));
     	FileInputStream inStream = new FileInputStream(file);
     	
@@ -246,4 +246,107 @@ public class ConverterServlet extends HttpServlet {
         inStream.close();
         outStream.close(); 
     }
+    
+    /***
+     * Outputs and logs non SQL file conversions
+     * @param fc
+     * @param ot
+     * @param fName
+     * @param fLength
+     * @return
+     * @throws IOException
+     */
+    private String convertCSV(FileController fc, OutputType ot, String fName, int fLength) throws IOException{
+    	String suff = "";
+    	String pref = "";
+    	String hlinkText = "";
+    	
+    	if(ot == OutputType.XML){
+    		suff = ".xml";
+    		pref = "xml_";
+    		hlinkText = "XML File";
+    	} else if(ot == OutputType.XML_SCHEMA){
+    		suff = ".xsd";
+    		pref = "xsd_";
+    		hlinkText = "XSD File";
+    	} else if(ot == OutputType.JSON){
+    		suff = ".json";
+    		pref = "json_";
+    		hlinkText = "JSON File";
+    	}
+    	
+    	File file = File.createTempFile(pref, suff);
+		file.deleteOnExit();
+		fc.outputData(file, ot);
+		
+		//log conversion
+		logToDataBase((String) session.getAttribute("user"), ot.toString(), fName, fLength);
+		
+		//return link
+		return "<a href='converter?file=" + file.getName() + "'>" + hlinkText + "</a><br>";
+    }
+    
+    /***
+     * Outputs and logs SQL file conversions
+     * @param fc
+     * @param fName
+     * @param fLength
+     * @param stype
+     * @param idCol
+     * @param genIdCol
+     * @param dbName
+     * @return
+     * @throws IOException
+     */
+    private String convertCSVDB(FileController fc, String fName, int fLength, SQLType stype, int idCol, boolean genIdCol, String dbName) throws IOException{
+    	String suff = ".sql";
+    	String pref = "";
+    	String hlinkText = "";
+    	
+    	if(stype == SQLType.MYSQL){
+    		pref = "mySQL_";
+    		hlinkText = "MySQL File";
+    	} else if (stype == SQLType.SQLSERVER){
+    		pref = "msSQL_";
+    		 hlinkText = "Microsoft SQL File";
+    	} else if (stype == SQLType.POSTGRESQL){
+    		pref = "pgSQL_";
+    		hlinkText = "Postgre SQL File";
+    	}
+		
+		File file = File.createTempFile(pref, suff);
+		file.deleteOnExit();
+		fc.outputToSQLFile(file, (String) dbName, stype, genIdCol, idCol);
+		
+		//log conversion
+		logToDataBase((String) session.getAttribute("user"), stype.toString(), fName, fLength);
+		
+		//return link
+		return "<a href='converter?file=" + file.getName() + "'>" + hlinkText + "</a><br>";
+    }
+    
+    /***
+     * A method for logging conversion to the database
+     * @param email
+     * @param conversionType
+     * @param fileName
+     * @param fileCharacters
+     * @return
+     */
+    private Response logToDataBase(String email, String conversionType, String fileName, int fileCharacters) {
+		String statement = "";
+		String restEnum = "HTML";
+		
+		String description = "The Jeremy API was used to convert a csv file to a " + conversionType + " file via the HTML interface.";
+		
+		statement = "INSERT INTO APIEvents (email, publicApiKey, fileName, size, methodType, description) VALUES('" + email + "', '" + "null" + "', '" + fileName + ".csv', " + fileCharacters +", '"+ restEnum + "', '" + description + "');";
+		
+		try {
+			SQLConnectionUpdate.openConnectionUpdate(statement);
+		} catch (Exception e) {
+			System.out.println("Error with statement: " +  statement + "\nError: " + e);
+			return Response.status(500).entity("Could not link api key with account").build();
+		}
+		return null;
+	}
 }
