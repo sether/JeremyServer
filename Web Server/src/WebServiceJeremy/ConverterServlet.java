@@ -49,7 +49,12 @@ public class ConverterServlet extends HttpServlet {
             	content = getUploadForm();
             } else if(stage.equals("upload")){ //uploaded file stage
             	content = "<h1>" + request.getAttribute("uploadedFileName") + "</h1>";
-            	content += IOUtils.toString((InputStream) request.getAttribute("uploadedFile"), "UTF-8");
+            	//content += IOUtils.toString((InputStream) request.getAttribute("uploadedFile"), "UTF-8");
+            	
+            	//parse checkboxes
+            	if(request.getAttribute("xmlCheck") != null){
+            		content += "xml Checked";
+            	}
             }
         }
         
@@ -95,13 +100,18 @@ public class ConverterServlet extends HttpServlet {
     }
     
     public String getUploadForm(){
-    	return  "<h2>CSV Upload</h2>"
+    	return  "<h2>CSV Upload Settings</h2>"
     			+ "<form action='converter' method='post' enctype='multipart/form-data'>"
     			+ "Table Name: <input type='text' name='tname' value='table_name'><br>"
     			+ "Delimiter: <input type='text' name='delimiter' value=','><br>"
     			+ "Date Format: <input type='text' name='dformat' value='dd/MM/yyyy'><br>"
     			+ "CSV File: <br><input type='file' id='input' name='file'><br><br>"
                 + "<input type='hidden' name='stage' value='upload'>"
+    			+ "<h2>File Output Settings</h2>"
+    			+ "<input type='checkbox' name='xmlCheck'>XML File<br>"
+    			+ "<input type='checkbox' name='schemaCheck'>XSD Schema File<br>"
+    			+ "<input type='checkbox' name='jsonCheck'>JSON File<br>"
+    			+ "<input type='checkbox' name='sqlCheck'>SQL File<br><br>"
     			+ "<input type='submit' value='Submit'>"
     			+ "</form>";
     }

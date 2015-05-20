@@ -95,7 +95,8 @@ public class LoginServlet extends HttpServlet {
     private void displayMember() {
     	content += "<h2>Login</h2>" +
     	        "<form action=login method=POST>" +
-    	        "Logged In" +
+    	        "Logged In <br>" +
+    	        "<a href=member>Member Page</a>" +
     	        "</form></br>";
     }
     
