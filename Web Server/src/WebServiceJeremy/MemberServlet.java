@@ -81,7 +81,7 @@ public class MemberServlet extends HttpServlet {
         "Public API Key: " + publicApiKey + "</br>" +
         "Private API Key: " + privateApiKey + "</br>" +
         "<form action='member' method='post'>" +
-        "<input type='submit' name='regenerate' value='Regenerate'>";
+        "<input type='submit' name='regenerate' value='Generate a new API Key'>";
     }	
         
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
