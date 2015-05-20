@@ -116,4 +116,28 @@ public class SQLConnectionUpdate {
 	    }
 		return null;
 	}
+	
+	public static String[] openConnectionGetPrivateKeyApi(String publicKey) throws Exception{
+		try{
+			// index[0] = Users email, index[1] = Private Api Key 
+			String[] privKeyEmail = new String[2];
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(connectionURL, "root", "");
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT * FROM User");
+			while (rs.next()){
+				String dbPublicKey = rs.getString("publicApiKey");
+				if(dbPublicKey.equalsIgnoreCase(publicKey)){
+					privKeyEmail[0] = rs.getString("email");
+					privKeyEmail[1] = rs.getString("privateApiKey");
+					
+					return privKeyEmail;
+				}
+			}
+			statement.close();
+	    }catch (Exception e){
+	    	throw(e);
+	    }
+		return null;
+	}
 }
