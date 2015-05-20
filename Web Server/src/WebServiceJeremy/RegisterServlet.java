@@ -131,9 +131,9 @@ public class RegisterServlet extends HttpServlet {
     private void welcomeForm() {
         content += "<h2>Welcome to JeremyAPI Web Service - Your Details:</h2>" +
         "First Name: " + firstName + "</br>" +
-        "Last Login: " + lastName + "</br>" +
+        "Last Name: " + lastName + "</br>" +
         "Email: " + email + "</br></br>" +
-        "<a href=converter>Converter Page</a>";
+        "<a href=member>Member Page</a>";
     }	
 
     private void connectionError() {
