@@ -116,18 +116,22 @@ public class ApiHandler {
 		
 		// We use 2048bit RSA encryption and generate a key pair (Public/Private Api Key)
 		keyGen = KeyPairGenerator.getInstance("RSA");
-		keyGen.initialize(2048);
+		keyGen.initialize(1024);
 		key = keyGen.generateKeyPair();
 		
-		// Make the keys
-		publicKey = key.getPublic().getEncoded().toString();	
-		privateKey = key.getPrivate().getEncoded().toString();
+		
+		byte[] pubKeyArray = key.getPublic().getEncoded();
+		
+		byte[] priKeyArray = key.getPublic().getEncoded();
 		
 		// Load keys into the Array
 		// 0 is always public, 1 is always private.
-		keyPair[0] = publicKey;
-		keyPair[1] = privateKey;
+		keyPair[0] = new String(Base64.encodeBase64(pubKeyArray)).trim();
+		keyPair[1] = new String(Base64.encodeBase64(priKeyArray)).trim();
 		
+		System.out.println(keyPair[0]);
+		keyGen = null;
+		key = null;
 		return keyPair;
 	}
 	

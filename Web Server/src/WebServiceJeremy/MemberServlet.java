@@ -77,9 +77,11 @@ public class MemberServlet extends HttpServlet {
         "First Name: " + firstName + "</br>" +
         "Last Name: " + lastName + "</br>" +
         "Password: " + password + "</br>" +
-        "Credit Card: " + creditCard + "</br>" +
-        "Public API Key: " + publicApiKey + "</br>" +
-        "Private API Key: " + privateApiKey + "</br>" +
+        "Credit Card: " + creditCard + "<p>" +
+        "Public API Key: " + 
+        "<textarea cols='50' rows='3'>" + publicApiKey + "</textarea>" + "</br>" +
+        "Private API Key: " +
+        "<textarea cols='50' rows='3'>" + privateApiKey + "</textarea>" + "</br>" +
         "<form action='member' method='post'>" +
         "<input type='submit' name='regenerate' value='Generate a new API Key'>";
     }	
