@@ -89,7 +89,9 @@ public class LoginServlet extends HttpServlet {
         "</form></br>" +
         "<a href=register>Register</a>";
     }	
-
+    /**
+     * On successful creation of the user, generate inital API keys for the user.
+     */
     private void displayMember() {
     	content += "<h2>Login</h2>" +
     	        "<form action=login method=POST>" +

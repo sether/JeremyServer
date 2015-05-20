@@ -13,6 +13,8 @@ import java.sql.Statement;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import WebServiceJeremy.ApiHandler.GENERATE_MODE;
+
 
 //Login, Register, Password API
 //Review googles API
@@ -71,7 +73,6 @@ public class MemberServlet extends HttpServlet {
        
     private void baseMemberForm() {
         content += "<h2>Member</h2>" +
-        "<form action= memberView>" +
         "Email: " + email + "</br>" +
         "First Name: " + firstName + "</br>" +
         "Last Name: " + lastName + "</br>" +
@@ -79,8 +80,8 @@ public class MemberServlet extends HttpServlet {
         "Credit Card: " + creditCard + "</br>" +
         "Public API Key: " + publicApiKey + "</br>" +
         "Private API Key: " + privateApiKey + "</br>" +
-        "<input type=button value= 'Generate API Key'>" +
-        "</form></br>";
+        "<form action='member' method='post'>" +
+        "<input type='submit' name='regenerate' value='Regenerate'>";
     }	
         
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -101,6 +102,14 @@ public class MemberServlet extends HttpServlet {
     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+    	if (request.getParameter("regenerate") != null) {
+    		try {
+				ApiHandler.generateClientKeys(GENERATE_MODE.REGENERATE, email);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Error generating new keys");
+			}
+    	}
         processRequest(request, response);
     }
 

@@ -81,7 +81,8 @@ public class ApiHandler {
 		if (publicKey == null || privateKey == null ) {
 			return theKeys = createKeys();
 		} else if (mode == GENERATE_MODE.REGENERATE) {
-			return theKeys = regenerateKeys(user);
+			System.out.println("WE USED REGENERATE KEYS METHOD");
+			return theKeys = regenerateKeys(email);
 		} else {
 			theKeys[0] = publicKey;
 			theKeys[1] = privateKey;
@@ -119,7 +120,7 @@ public class ApiHandler {
 	
 	public static String[] regenerateKeys(String email) throws Exception {
 		String[] theKeys = createKeys();
-		String statement = "UPDATE USERS SET publicApiKey=" + theKeys[0] + ", privateApiKey=" + theKeys[1] + " WHERE email=" + email;
+		String statement = "UPDATE USER SET publicApiKey='" + theKeys[0] + "', privateApiKey='" + theKeys[1] + "' WHERE email='" + email + "'";
 		SQLConnectionUpdate.openConnectionUpdate(statement);
 		
 		return theKeys;
