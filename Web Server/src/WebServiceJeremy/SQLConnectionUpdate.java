@@ -76,6 +76,26 @@ public class SQLConnectionUpdate {
 			   }
 		   }	
 	   }
+	//Is this needed?
+	public static String openConnectionGetPublicKey(String user) throws Exception{
+		try{
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(connectionURL, "root", "");
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT * FROM User");
+			while (rs.next()){
+				String userEmail = rs.getString("email");
+				String publicKey = rs.getString("publicApiKey");
+				if(userEmail.equalsIgnoreCase(user)){
+					return publicKey;
+				}
+			}
+			statement.close();
+	    }catch (Exception e){
+	    	throw(e);
+	    }
+		return null;
+	}
 	
 	public static String openConnectionGetPrivateKey(String user) throws Exception{
 		try{
@@ -88,26 +108,6 @@ public class SQLConnectionUpdate {
 				String privateKey = rs.getString("privateApiKey");
 				if(userEmail.equalsIgnoreCase(user)){
 					return privateKey;
-				}
-			}
-			statement.close();
-	    }catch (Exception e){
-	    	throw(e);
-	    }
-		return null;
-	}
-	
-	public static String openConnectionGetPublicKey(String user) throws Exception{
-		try{
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			connection = DriverManager.getConnection(connectionURL, "root", "");
-			statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT * FROM User");
-			while (rs.next()){
-				String userEmail = rs.getString("email");
-				String publicKey = rs.getString("publicApiKey");
-				if(userEmail.equalsIgnoreCase(user)){
-					return publicKey;
 				}
 			}
 			statement.close();

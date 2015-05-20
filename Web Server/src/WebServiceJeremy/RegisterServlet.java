@@ -9,6 +9,8 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import WebServiceJeremy.ApiHandler.GENERATE_MODE;
+
 public class RegisterServlet extends HttpServlet {
    private String firstName;
    private String lastName;
@@ -75,7 +77,7 @@ public class RegisterServlet extends HttpServlet {
             }
             else {
             	try {
-					keys = ApiHandler.generateClientKeys(email);
+					keys = ApiHandler.generateClientKeys(GENERATE_MODE.NEW_USER, email);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -89,7 +91,6 @@ public class RegisterServlet extends HttpServlet {
             		e.printStackTrace();
             		connectionError();
             	}
-            	
             }            
             content += "</body></html>";
         }finally{

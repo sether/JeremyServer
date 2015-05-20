@@ -12,46 +12,25 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 
 
-
+/**
+ * 
+ * @author Anthony Howse
+ *
+ */
 public class ApiHandler {
-	// Generating the Keys
-	public static String[] generateClientKeys(String user) throws Exception {		
-		String privateKey = null;
-		String publicKey = null;
-		KeyPairGenerator keyGen = null;
-		KeyPair key = null;
-		String theKeys[] = new String[2];
-		
-		privateKey = SQLConnectionUpdate.openConnectionGetPrivateKey(user);
-		publicKey = SQLConnectionUpdate.openConnectionGetPublicKey(user);
-		
-		if (publicKey == null && privateKey == null) {
-			keyGen = KeyPairGenerator.getInstance("RSA");
-			keyGen.initialize(2048);
-			key = keyGen.generateKeyPair();
-			
-			// Make the keys
-			privateKey = key.getPrivate().getEncoded().toString();
-			publicKey = key.getPublic().getEncoded().toString();
-			
-			theKeys[0] = privateKey;
-			theKeys[1] = publicKey;
-			
-			// Storing the intial API keys is handled by the action of registering
-			
-			System.out.println("Newly Created pub/pri keys"); // debug
-			System.out.println("Private: " + privateKey + " Public: " + publicKey); // debug
-			
-			return theKeys;
-		} else {
-			System.out.println("Grabbed keys from database."); // debug
-			theKeys[0] = privateKey;
-			theKeys[1] = publicKey;
-			
-			return theKeys;
-		}	
+	public enum GENERATE_MODE {
+		NEW_USER,
+		REGENERATE
 	}
 	
+	/**
+	 * 
+	 * @param email
+	 * @param privateKey
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeyException
+	 */
 	public static String hashSecrets(String email, String privateKey) throws NoSuchAlgorithmException, InvalidKeyException {
 		String entropyString = email + privateKey;
 	    SecretKey secretKey = null;
@@ -65,7 +44,7 @@ public class ApiHandler {
 
 	    byte[] rawHmac = mac.doFinal(entropyString.getBytes());
 
-	    return new String(Base64.encodeBase64(mac.doFinal(rawHmac))).trim();
+	    return new String(Base64.encodeBase64(rawHmac)).trim();
 	}
 	
 	/**
@@ -83,6 +62,67 @@ public class ApiHandler {
 		String serverHash = hashSecrets(privateKeyAndEmail[0], privateKeyAndEmail[1]);
 		
 		return success = serverHash.equals(clientHash) ? true : false;
+	}
+	
+	/**
+	 * 
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public static String[] generateClientKeys(GENERATE_MODE mode, String email) throws Exception {
+		String publicKey = null;
+		String privateKey = null;		
+		String theKeys[] = new String[2];
+		
+		publicKey = SQLConnectionUpdate.openConnectionGetPublicKey(email);
+		privateKey = SQLConnectionUpdate.openConnectionGetPrivateKey(email);
+		
+		if (publicKey == null || privateKey == null ) {
+			return theKeys = createKeys();
+		} else if (mode == GENERATE_MODE.REGENERATE) {
+			return theKeys = regenerateKeys(user);
+		} else {
+			theKeys[0] = publicKey;
+			theKeys[1] = privateKey;
+			
+			return theKeys;
+		}	
+	}
+	
+	/**
+	 * Helper method
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 */
+	public static String[] createKeys() throws NoSuchAlgorithmException {
+		String[] keyPair = new String[2];
+		String publicKey = null;
+		String privateKey = null;
+		KeyPairGenerator keyGen = null;
+		KeyPair key = null;
+		
+		keyGen = KeyPairGenerator.getInstance("RSA");
+		keyGen.initialize(2048);
+		key = keyGen.generateKeyPair();
+		
+		// Make the keys
+		publicKey = key.getPublic().getEncoded().toString();	
+		privateKey = key.getPrivate().getEncoded().toString();
+		
+		// Load keys into the Array
+		keyPair[0] = publicKey;
+		keyPair[1] = privateKey;
+		
+		return keyPair;
+	}
+	
+	public static String[] regenerateKeys(String email) throws Exception {
+		String[] theKeys = createKeys();
+		String statement = "UPDATE USERS SET publicApiKey=" + theKeys[0] + ", privateApiKey=" + theKeys[1] + " WHERE email=" + email;
+		SQLConnectionUpdate.openConnectionUpdate(statement);
+		
+		return theKeys;
 	}
 }
 
