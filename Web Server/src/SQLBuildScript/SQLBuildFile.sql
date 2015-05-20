@@ -7,15 +7,14 @@ firstName VARCHAR(20),
 lastName VARCHAR(20), 
 password VARCHAR(20), 
 creditCardNumber VARCHAR(20), 
-publicApiKey VARCHAR(512), 
-privateApiKey VARCHAR(512),
+publicApiKey VARCHAR(1024), 
+privateApiKey VARCHAR(1024),
 PRIMARY KEY (email));
-
 
 CREATE TABLE APIEvents(
 id INT NOT NULL AUTO_INCREMENT,
 email VARCHAR(50),
-publicApiKey VARCHAR(512),
+publicApiKey VARCHAR(1024),
 logDate DATETIME DEFAULT CURRENT_TIMESTAMP,
 fileName VARCHAR(50),
 size VARCHAR(20),

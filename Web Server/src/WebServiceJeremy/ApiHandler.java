@@ -120,13 +120,12 @@ public class ApiHandler {
 		key = keyGen.generateKeyPair();
 		
 		// Make the keys
-		publicKey = key.getPublic().getEncoded().toString();	
-		privateKey = key.getPrivate().getEncoded().toString();
+		byte[] pubKeyArray = key.getPublic().getEncoded();
+		byte[] priKeyArray = key.getPrivate().getEncoded();
 		
 		// Load keys into the Array
-		// 0 is always public, 1 is always private.
-		keyPair[0] = publicKey;
-		keyPair[1] = privateKey;
+		keyPair[0] = new String(Base64.encodeBase64(pubKeyArray)).trim();
+		keyPair[1] = new String(Base64.encodeBase64(priKeyArray)).trim();
 		
 		return keyPair;
 	}
