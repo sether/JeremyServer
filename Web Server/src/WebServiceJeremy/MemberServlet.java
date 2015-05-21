@@ -24,10 +24,10 @@ public class MemberServlet extends HttpServlet {
 	private String lastName;
 	private String email;
 	private String creditCard;
-	private String password;
 	private String publicApiKey;
 	private String privateApiKey;
 	public String content;
+	private Double totalOwed = 0.0;
 	
     // Processes requests for both HTTP <code>GET</code> and <code>POST</code>.
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -45,12 +45,22 @@ public class MemberServlet extends HttpServlet {
 				String emailRS = rs.getString("email");
 				if(emailRS.equalsIgnoreCase(user)){
 					email = emailRS;
-					password = rs.getString("password");	
 					firstName = rs.getString("firstName");
 					lastName = rs.getString("lastName");
 					creditCard = rs.getString("creditCardNumber");
 					publicApiKey = rs.getString("publicApiKey");
 					privateApiKey = rs.getString("privateApiKey");
+					ResultSet rs2 = statement.executeQuery("SELECT * FROM User");
+					while (rs2.next()){
+						String emailRS2 = rs2.getString("email");
+						if(emailRS2.equalsIgnoreCase(user)){
+							if(rs2.getString("methodType").equalsIgnoreCase("HTML")){
+								totalOwed += 0.1;
+							}else{
+								totalOwed += 0.2;
+							}
+						}
+					}
 				}
 			}
 			statement.close();
@@ -76,7 +86,7 @@ public class MemberServlet extends HttpServlet {
         "Email: " + email + "</br>" +
         "First Name: " + firstName + "</br>" +
         "Last Name: " + lastName + "</br>" +
-        "Password: " + password + "</br>" +
+        "Total Owed: " + totalOwed + "</br>" +
         "Credit Card: " + creditCard + "<p>" +
         "Public API Key: " + 
         "<textarea cols='50' rows='3'>" + publicApiKey + "</textarea>" + "</br>" +
