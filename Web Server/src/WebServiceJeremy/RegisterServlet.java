@@ -1,18 +1,18 @@
-/**File:    RegisterServlet.java
- * Purpose: Register user details; set cookies and session data
- * Listing: 24.NNN
- */
 package WebServiceJeremy;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-
 import javax.servlet.*;
 import javax.servlet.http.*;
-
 import WebServiceJeremy.ApiHandler.GENERATE_MODE;
 
+/**
+ * Class to register a new user of the Web Service
+ * 
+ * @author Ryan Kavanagh
+ * @version 1.0
+ */
 public class RegisterServlet extends HttpServlet {
    private String firstName;
    private String lastName;

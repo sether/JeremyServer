@@ -9,9 +9,12 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-//Login, Register, Password API
-//Review googles API
-
+/**
+ * Class to login to the Web Service
+ * 
+ * @author Ryan Kavanagh
+ * @version 1.0
+ */
 public class LoginServlet extends HttpServlet {
 	private String email;
 	private String password;
