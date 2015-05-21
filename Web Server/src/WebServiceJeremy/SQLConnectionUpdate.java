@@ -1,6 +1,5 @@
 package WebServiceJeremy;
 
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,7 +10,7 @@ import java.util.Arrays;
 /**
  * Class to connect and interact with the Web Service database
  * 
- * @author Ryan Kavanagh
+ * @author Ryan Kavanagh, Anthony Howse, Alex Brown
  * @version 1.0
  */
 public class SQLConnectionUpdate {
@@ -19,6 +18,24 @@ public class SQLConnectionUpdate {
 	private static Statement statement = null;
 	private static String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
 
+	/**
+	 * Used to check if the entered supplied email already exists in the database
+	 * 
+	 * @param emailTest - the supplied email to check against
+	 * @return usedEmail - boolean indicating whether the email has been used or not
+	 * <br>
+	 * <b>USAGE:</b></br>
+	 * <pre>
+	 * String email = &quot;r@k.com&quot;;
+	 * Boolean emailUsed = false;
+	 * try {
+	 * 	emailUsed = SQLConnectionUpdate.openConnectionValidationUser(email);
+	 * } catch (Exception e) {
+	 * 	e.printStackTrace();
+	 * }
+	 * </pre>
+	 * @throws Exception
+	 */
 	public static boolean openConnectionValidationUser(String emailTest)
 			throws Exception {
 		boolean usedEmail = false;
@@ -40,6 +57,26 @@ public class SQLConnectionUpdate {
 		return usedEmail;
 	}
 
+	/**
+	 * Used to check if the entered supplied email and password are valid login credentials
+	 * 
+	 * @param emailTest - the supplied email to check against
+	 * @param passwordTest - the supplied password to check against
+	 * @return validUser - boolean indicating whether the user's login credentials are valid or not
+	 * <br>
+	 * <b>USAGE:</b></br>
+	 * <pre>
+	 * String email = &quot;r@k.com&quot;;
+	 * String password = &quot;taste&quot;;
+	 * Boolean validUser = false;
+	 * try {
+	 * 	validUser = SQLConnectionUpdate.openConnectionValidationLogin(email, password);
+	 * } catch (Exception e) {
+	 * 	e.printStackTrace();
+	 * }
+	 * </pre>
+	 * @throws Exception
+	 */
 	public static boolean openConnectionValidationLogin(String emailTest,
 			String passwordTest) throws Exception {
 		boolean validUser = false;
@@ -72,20 +109,20 @@ public class SQLConnectionUpdate {
 	}
 
 	/**
-	 * The class's constructor method
+	 * Used to execute a statement to interact with the database
 	 * 
 	 * @param executeStatement - the statement to be executed
 	 * 
 	 * <br>
 	 * <b>USAGE:</b></br>
 	 * <pre>
-	 * private String firstName = &quot;Ryan&quot;;
-	 * private String lastName = &quot;Kavanagh&quot;;
-	 * private String email = &quot;r@k.com&quot;;
-	 * private String creditCard = &quot;123123123&quot;;
-	 * private String password = &quot;taste&quot;;
-	 * private String salt = &quot;test&quot;;
-	 * private String[] keys = new String[2];
+	 * String firstName = &quot;Ryan&quot;;
+	 * String lastName = &quot;Kavanagh&quot;;
+	 * String email = &quot;r@k.com&quot;;
+	 * String creditCard = &quot;123123123&quot;;
+	 * String password = &quot;taste&quot;;
+	 * String salt = &quot;test&quot;;
+	 * String[] keys = new String[2];
 	 * keys[0] = &quot;t13&quot;;
 	 * keys[1] = &quot;t23&quot;;
 	 * String exeStatement = &quot;INSERT INTO User VALUES ('&quot; + email + &quot;', '&quot; + firstName
