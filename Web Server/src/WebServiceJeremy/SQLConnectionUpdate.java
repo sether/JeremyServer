@@ -140,4 +140,20 @@ public class SQLConnectionUpdate {
 	    }
 		return null;
 	}
+	
+	public static String openConnectionGetUserEmail(String publicAPIKey) throws Exception{
+		try{
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(connectionURL, "root", "");
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT * FROM User where publicApiKey = '" + publicAPIKey + "'");
+			while (rs.next()){
+				return rs.getString("email");
+			}
+			statement.close();
+	    }catch (Exception e){
+	    	throw(e);
+	    }
+		return null;
+	}
 }
