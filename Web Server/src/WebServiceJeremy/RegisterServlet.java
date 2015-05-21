@@ -5,6 +5,8 @@
 package WebServiceJeremy;
 
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -17,6 +19,7 @@ public class RegisterServlet extends HttpServlet {
    private String email;
    private String creditCard;
    private String password;
+   private String salt;
    private String reEnterPassword;
    public String content;
    private String[] keys = new String[2];
@@ -76,12 +79,23 @@ public class RegisterServlet extends HttpServlet {
                 incompleteForm();
             }
             else {
+				try {
+					SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+					byte[] bSalt = new byte[8];
+					random.nextBytes(bSalt);
+					byte[] bDigest;
+					bDigest = SaltHash.getHash(1000, password, bSalt);
+					password = SaltHash.byteToBase64(bDigest);
+					salt = SaltHash.byteToBase64(bSalt);
+				} catch (NoSuchAlgorithmException e1) {
+					e1.printStackTrace();
+				}
             	try {
 					keys = ApiHandler.generateClientKeys(GENERATE_MODE.NEW_USER, email);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-            	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + creditCard + "', '" + keys[0] + "', '" + keys[1] + "')";
+            	String exeStatement = "INSERT INTO User VALUES ('" + email + "', '" + firstName + "', '" + lastName + "', '" + password + "', '" + salt + "', '" + creditCard + "', '" + keys[0] + "', '" + keys[1] + "')";
             	try {
             		SQLConnectionUpdate.openConnectionUpdate(exeStatement);
             		welcomeForm();
