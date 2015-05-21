@@ -302,6 +302,7 @@ public class ConverterServlet extends HttpServlet {
     	String suff = ".sql";
     	String pref = "";
     	String hlinkText = "";
+    	String error = "";
     	
     	if(stype == SQLType.MYSQL){
     		pref = "mySQL_";
@@ -313,6 +314,14 @@ public class ConverterServlet extends HttpServlet {
     		pref = "pgSQL_";
     		hlinkText = "Postgre SQL File";
     	}
+    	
+    	//enforce idCol setting when user requests primary key to be generated
+    	if(genIdCol){
+    		idCol = -1;
+    	} else if(idCol + 1 > fc.getColumnClasses().length || idCol < 0){
+    		idCol = 0;
+    		error = "Invalid primary key column. Defaulted to column 0.";
+    	}
 		
 		File file = File.createTempFile(pref, suff);
 		file.deleteOnExit();
@@ -322,7 +331,7 @@ public class ConverterServlet extends HttpServlet {
 		logToDataBase((String) session.getAttribute("user"), stype.toString(), fName, fLength);
 		
 		//return link
-		return "<a href='converter?file=" + file.getName() + "'>" + hlinkText + "</a><br>";
+		return "<a href='converter?file=" + file.getName() + "'>" + hlinkText + "</a> " + error + "<br>";
     }
     
     /***
