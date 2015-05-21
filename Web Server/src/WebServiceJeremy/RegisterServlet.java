@@ -84,9 +84,10 @@ public class RegisterServlet extends HttpServlet {
 					byte[] bSalt = new byte[8];
 					random.nextBytes(bSalt);
 					byte[] bDigest;
-					bDigest = SaltHash.getHash(1000, password, bSalt);
-					password = SaltHash.byteToBase64(bDigest);
-					salt = SaltHash.byteToBase64(bSalt);
+					SaltHash sh = new SaltHash();
+					bDigest = sh.getHash(1000, password, bSalt);
+					password = sh.byteToBase64(bDigest);
+					salt = sh.byteToBase64(bSalt);
 				} catch (NoSuchAlgorithmException e1) {
 					e1.printStackTrace();
 				}

@@ -15,6 +15,8 @@ public class SaltHash {
 
 	private final static int ITERATION_NUMBER = 1000;
 
+	public SaltHash(){}
+	
 	public boolean authenticate(Connection con, String login, String password)
 			throws SQLException, NoSuchAlgorithmException {
 		PreparedStatement ps = null;
@@ -62,7 +64,7 @@ public class SaltHash {
 	}
 				
 
-	public static byte[] getHash(int iterationNb, String password, byte[] salt)
+	public byte[] getHash(int iterationNb, String password, byte[] salt)
 			throws NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance("SHA-1");
 		digest.reset();
@@ -98,12 +100,12 @@ public class SaltHash {
 		}
 	}
 
-	public static byte[] base64ToByte(String data) throws IOException {
+	public byte[] base64ToByte(String data) throws IOException {
 		BASE64Decoder decoder = new BASE64Decoder();
 		return decoder.decodeBuffer(data);
 	}
 
-	public static String byteToBase64(byte[] data) {
+	public String byteToBase64(byte[] data) {
 		BASE64Encoder endecoder = new BASE64Encoder();
 		return endecoder.encode(data);
 	}

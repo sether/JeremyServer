@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 
 public class SQLConnectionUpdate {
 	private static Connection connection = null;
@@ -33,15 +34,20 @@ public class SQLConnectionUpdate {
 	
 	public static boolean openConnectionValidationLogin(String emailTest, String passwordTest) throws Exception{
 		boolean validUser = false;
+		SaltHash sh = new SaltHash();
 		try{
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			connection = DriverManager.getConnection(connectionURL, "root", "");
 			statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT * FROM User");
+			ResultSet rs = statement.executeQuery("SELECT EMAIL, PASSWORD, SALT FROM User");
 			while (rs.next()){
 				String email = rs.getString("email");
 				String password = rs.getString("password");
-				if(email.equalsIgnoreCase(emailTest) && password.equals(passwordTest)){
+				String salt = rs.getString("salt");
+				byte[] bDigest = sh.base64ToByte(password);
+		        byte[] bSalt = sh.base64ToByte(salt);
+		        byte[] proposedDigest = sh.getHash(1000, passwordTest, bSalt);
+		        if(email.equalsIgnoreCase(emailTest) && Arrays.equals(proposedDigest, bDigest)){
 					validUser = true;
 				}
 			}
