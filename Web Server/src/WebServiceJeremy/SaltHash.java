@@ -15,8 +15,9 @@ public class SaltHash {
 
 	private final static int ITERATION_NUMBER = 1000;
 
-	public SaltHash(){}
-	
+	public SaltHash() {
+	}
+
 	public boolean authenticate(Connection con, String login, String password)
 			throws SQLException, NoSuchAlgorithmException {
 		PreparedStatement ps = null;
@@ -58,11 +59,22 @@ public class SaltHash {
 			throw new SQLException(
 					"Database inconsistant Salt or Digested Password altered");
 		} finally {
-			close(rs);
-			close(ps);
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
-				
 
 	public byte[] getHash(int iterationNb, String password, byte[] salt)
 			throws NoSuchAlgorithmException {
@@ -80,24 +92,6 @@ public class SaltHash {
 			input = digest.digest(input);
 		}
 		return input;
-	}
-
-	public void close(Statement ps) {
-		if (ps != null) {
-			try {
-				ps.close();
-			} catch (SQLException ignore) {
-			}
-		}
-	}
-
-	public void close(ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException ignore) {
-			}
-		}
 	}
 
 	public byte[] base64ToByte(String data) throws IOException {
