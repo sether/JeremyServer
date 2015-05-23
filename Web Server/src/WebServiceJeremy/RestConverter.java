@@ -2,28 +2,25 @@ package WebServiceJeremy;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Scanner;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.jeremy.FileController;
 import com.jeremy.FileUtility;
 import com.jeremy.FileController.OutputType;
 
-//Sets the path to base URL + /hello
 @Path("/restconverter")
 public class RestConverter {
 	
 	
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
-	@Path("/converttoxml")
+	@Path("/xml")
 	public Response convertToXML(@FormParam("csvData") String csvData /*Required*/,
 			@FormParam("encodedEmail") String encodedEmail /*Required*/,
 			@FormParam("publicAPIKey") String publicAPIKey /*Required*/,
@@ -37,7 +34,7 @@ public class RestConverter {
 	
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
-	@Path("/converttojson")
+	@Path("/json")
 	public Response convertToJSON(@FormParam("csvData") String csvData /*Required*/,
 			@FormParam("encodedEmail") String encodedEmail /*Required*/,
 			@FormParam("publicAPIKey") String publicAPIKey /*Required*/,
@@ -60,10 +57,21 @@ public class RestConverter {
 			String dateFormat,
 			String columnDelimiter){
 		
+		//get the users email
+		String userEmail = AuthorizeUser(encodedEmail, publicAPIKey);
+		
+		//check its not empty
+		if (userEmail == null || userEmail.equalsIgnoreCase("")) {
+			return Response.status(403).entity("Hashed email not correct. Please use Base64 Encoding.").build();
+		}
+		
 		//check if user is valid and Authorize them
-		if (publicAPIKey == null || publicAPIKey.equals("") || encodedEmail == null || encodedEmail.equals("") || !AuthorizeUser(encodedEmail, publicAPIKey)) {
+		if (publicAPIKey == null || publicAPIKey.equals("")) {
 			//return not a user
 			return Response.status(403).entity("Not a valid API key").build();
+		}
+		if (encodedEmail == null || encodedEmail.equals("")) {
+			return Response.status(403).entity("Encoded email is empty").build();
 		}
 		
 		//make sure there is a table name
@@ -75,7 +83,7 @@ public class RestConverter {
 		//make sure the csv data is not empty or null
 		if (csvData == null || csvData.equals("")) {
 			//if it is, error
-			return Response.status(406).entity("Please supply csv data").build();
+			return Response.status(406).entity("Please supply CSV data").build();
 		}
 		
 		FileController fc = new FileController();
@@ -132,12 +140,11 @@ public class RestConverter {
 			outputFile.delete();
 		} catch (IOException e) {
 			//return error if failed
-			return Response.status(500).entity("failed creation: IOError").build();
+			return Response.status(500).entity("Failed creation: Internal Error").build();
 		}
 		
 		//log the usage to a database for a user
-		//TODO: get proper email
-		Response dataBaseResponse = logToDataBase("apples@newApple.com", publicAPIKey, fileOutputType, tableName, csvData.length());
+		Response dataBaseResponse = logToDataBase(userEmail, publicAPIKey, fileOutputType, tableName, csvData.length());
 		
 		//if there is a response from that database
 		if (dataBaseResponse != null) {
@@ -149,9 +156,25 @@ public class RestConverter {
 	    return Response.status(201).entity(result).build();
 	}
 	
-	private boolean AuthorizeUser(String encodedEmail, String publicAPIKey) {
-		// TODO Authorize used to Anthony's API interface
-		return true;
+	private String AuthorizeUser(String encodedEmail, String publicAPIKey) {	
+		try {
+			String result = SQLConnectionUpdate.openConnectionGetUserEmail(publicAPIKey);
+			if (result != null) {
+				if (ApiHandler.compareHashes(encodedEmail, publicAPIKey)) {
+					return result;
+				} else {
+					return null;
+				}
+				
+ 
+			} else {
+				return null;
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
+			return null;
+		}
 	}
 	
 	private Response logToDataBase(String email, String publicAPIKey, OutputType conversionType, String fileName, int fileCharacters) {
@@ -165,8 +188,8 @@ public class RestConverter {
 		try {
 			SQLConnectionUpdate.openConnectionUpdate(statement);
 		} catch (Exception e) {
-			System.out.println("Error with statement: " +  statement + "\nError: " + e);
-			return Response.status(500).entity("Could not link api key with account").build();
+			//System.out.println("Error with statement: " +  statement + "\nError: " + e);
+			return Response.status(500).entity("Could not link Public API key with account").build();
 		}
 		return null;
 	}

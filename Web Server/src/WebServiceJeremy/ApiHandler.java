@@ -35,7 +35,7 @@ public class ApiHandler {
 	 */
 	public static String hashSecrets(String email, String privateKey) throws NoSuchAlgorithmException, InvalidKeyException {
 		// Create an "Sting of entropy" which is just a String containing the email + private key
-		String entropyString = email + privateKey;
+		String entropyString = email.toLowerCase() + privateKey;
 	    SecretKey secretKey = null;
 
 	    // Convert the entropyString to a byte array to use it in the algorithm.
@@ -60,7 +60,7 @@ public class ApiHandler {
 	 * @throws Exception
 	 */
 	public static boolean compareHashes(String clientHash, String publicApiKey) throws Exception {
-		boolean success = false;
+
 		// index[0] = Users email, index[1] = Private Api Key 
 		String[] emailAndprivateKey = SQLConnectionUpdate.openConnectionGetPrivateKeyApi(publicApiKey);
 		
@@ -68,7 +68,7 @@ public class ApiHandler {
 		// using the same information the client did.
 		String serverHash = hashSecrets(emailAndprivateKey[0], emailAndprivateKey[1]);
 		
-		return success = serverHash.equals(clientHash) ? true : false;
+		return serverHash.equals(clientHash) ? true : false;
 	}
 	
 	/**
