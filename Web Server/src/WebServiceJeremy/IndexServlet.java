@@ -17,8 +17,6 @@ public class IndexServlet extends HttpServlet {
     throws ServletException, IOException {
     	HttpSession session = request.getSession();
     	String content = "";
-    	
-    	getIndexPage();
         
         RequestDispatcher view = request.getRequestDispatcher("template.jsp"); // use this view
         request.setAttribute("content", content); //set this value - the page will display the value in the content section
@@ -45,9 +43,5 @@ public class IndexServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
        processRequest(request, response);
-    }
-    
-    public String getIndexPage(){
-    	return  "";
     }
 }
