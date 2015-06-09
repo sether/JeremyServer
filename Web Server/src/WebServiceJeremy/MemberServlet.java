@@ -35,6 +35,7 @@ public class MemberServlet extends HttpServlet {
     	HttpSession session = request.getSession();
     	String user = (String) session.getAttribute("user");
     	content = "";
+    	totalOwed = 0.0;
     	try{
     		String connectionURL = "jdbc:mysql://localhost:3306/JeremyAPIDatabase";
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -50,7 +51,7 @@ public class MemberServlet extends HttpServlet {
 					creditCard = rs.getString("creditCardNumber");
 					publicApiKey = rs.getString("publicApiKey");
 					privateApiKey = rs.getString("privateApiKey");
-					ResultSet rs2 = statement.executeQuery("SELECT * FROM User");
+					ResultSet rs2 = statement.executeQuery("SELECT * FROM APIEvents");
 					while (rs2.next()){
 						String emailRS2 = rs2.getString("email");
 						if(emailRS2.equalsIgnoreCase(user)){
