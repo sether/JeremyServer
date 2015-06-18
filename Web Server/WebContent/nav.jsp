@@ -3,7 +3,7 @@
 		<li class="active"><a href="index.jsp">Home</a>
 		<li><a href="converter">Converter</a>
 		<li><a href="contactUs.jsp">Contact Us</a>
-		<li><a href="documentation.html">Documentation</a>
+		<li><a href="documentation.jsp">Documentation</a>
 		
 		<%
 		String status = (String) session.getAttribute("status");
